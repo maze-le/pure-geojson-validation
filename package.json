@@ -1,6 +1,6 @@
 {
   "name": "pure-geojson-parser",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A geojson parser with purify-ts support.",
   "main": "src/index.ts",
   "scripts": {
@@ -10,8 +10,8 @@
   },
   "keywords": [
     "geojson",
-    "purify-ts",
-    "parser"
+    "validation",
+    "purify-ts"
   ],
   "author": "Mathias Vonende",
   "license": "MIT",
