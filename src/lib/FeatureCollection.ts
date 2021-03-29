@@ -1,5 +1,6 @@
 import { Just, Maybe, Nothing } from "purify-ts";
 import { BBox, Feature, FeatureCollection } from "geojson";
+
 import { validateBBox } from "./BBox";
 import { validateFeature } from "./Feature";
 import { isDefined } from "./Shared";

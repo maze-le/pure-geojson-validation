@@ -1,3 +1,6 @@
+export type Position = number[];
+export type Coordinates = Position | Position[] | Position[][] | Position[][][];
+
 const notOnce = <T>(array: T[], f: (x: T) => boolean) => !array.some(f);
 
 /** @returns true if 'multipolygon' is an array of polygon geometries. **/
@@ -15,11 +18,11 @@ export const isLineArray = (multiline: unknown): boolean => {
     return false;
   }
 
-  return notOnce(multiline, (x) => !isPositionArray(x));
+  return notOnce(multiline, (x) => !isPointArray(x));
 };
 
-/** @returns true of 'multipoint' is an array of point geometries. **/
-export const isPositionArray = (multipoint: unknown): boolean => {
+/** @returns true if 'multipoint' is an array of point geometries. **/
+export const isPointArray = (multipoint: unknown): boolean => {
   if (!Array.isArray(multipoint)) {
     return false;
   }
@@ -28,16 +31,17 @@ export const isPositionArray = (multipoint: unknown): boolean => {
 };
 
 /**
- * A point is a single coordinate, represented by an array with 2 or 3 numbers.
- * The array has the following semantics:
+ * A point is the datatype for a single coordinate, represented by
+ * an array with 2 or 3 numbers. The array has the following semantics:
  *
  *  1. entry: latitude -- angle between -180.0 and 180.0
  *  1. entry: longitude -- angle between -90.0 and 90.0
  *  1. (optional) entry: height
  *
- * Further entries are not invalid, but are ignored.
+ * Further entries are not invalid, but ignored.
  *
  * @returns true if position is a valid position geometry.
+ * @see https://tools.ietf.org/html/rfc7946
  **/
 export const isPoint = (position: unknown): boolean => {
   if (!Array.isArray(position)) {
@@ -52,19 +56,17 @@ export const isPoint = (position: unknown): boolean => {
     return false;
   }
 
-  const isCoordinatePair =
-    isCoordinateLat(position[0]) && isCoordinateLon(position[1]);
+  const isCoordinatePair = isLat(position[0]) && isLon(position[1]);
 
   return position.length === 2
     ? isCoordinatePair
-    : isCoordinatePair && isCoordinateHeight(position[2]);
+    : isCoordinatePair && isHeight(position[2]);
 };
 
-export const isCoordinateLat = (lat: unknown): boolean =>
+export const isLat = (lat: unknown): boolean =>
   typeof lat === "number" && lat >= -180.0 && lat <= 180.0;
 
-export const isCoordinateLon = (lon: unknown): boolean =>
+export const isLon = (lon: unknown): boolean =>
   typeof lon === "number" && lon >= -90.0 && lon <= 90.0;
 
-export const isCoordinateHeight = (h: unknown): boolean =>
-  typeof h === "number";
+export const isHeight = (h: unknown): boolean => typeof h === "number";
