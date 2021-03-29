@@ -5,6 +5,13 @@ import { validateBBox } from "./BBox";
 import { isRecord, record } from "./Record";
 import { validateFeatureGeometry } from "./Geometry";
 
+/**
+ * Checks if a given feature is valid and has sane coordinate values.
+ * If a geometry fails sanity cheks on the coordinate space a null-geometry 
+ * is created and a warning is issued.
+ * 
+ * @param feat an eventual feature
+ */
 export const validateFeature = (feat: unknown): Maybe<Feature> => {
   const props = isRecord(feat)
     .chain(validateFeatureProps)

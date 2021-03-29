@@ -1,8 +1,9 @@
 import { Just, Maybe, Nothing } from "purify-ts";
-import { BBox, Feature, FeatureCollection } from "geojson";
+import { Feature, FeatureCollection } from "geojson";
 
 import { validateBBox } from "./BBox";
 import { validateFeature } from "./Feature";
+
 import { isDefined } from "./Shared";
 import { isRecord, record } from "./Record";
 
@@ -18,8 +19,11 @@ const hasFeatureArray = (x: record) =>
     type: x.type,
   });
 
-/** Checks if a feature collection has an valid feature array with valid members. */
-const checkFeatures = (x: FeatureCollection) => {
+/**
+ * Checks if a feature collection has an valid feature array with valid members.
+ * @returns eventually Just the Feature collection if it's valid, Nothing otheriwse.
+ **/
+const checkFeatures = (x: FeatureCollection): Maybe<FeatureCollection> => {
   const validFeatures = validateFeatures(x.features);
   if (validFeatures.isNothing()) {
     return Nothing;
@@ -32,7 +36,7 @@ const checkFeatures = (x: FeatureCollection) => {
 
   const boundingBox = validateBBox(x.bbox);
   if (boundingBox.isJust()) {
-    featureCollection.bbox = boundingBox.orDefault([0, 0, 0, 0] as BBox);
+    featureCollection.bbox = boundingBox.orDefault([0, 0, 0, 0]);
   }
 
   return Just(featureCollection);
@@ -55,6 +59,11 @@ const validateFeatures = (collection: unknown[]): Maybe<Array<Feature>> => {
   return allFeaturesValid ? Just(features) : Nothing;
 };
 
+/**
+ * @param fc an eventual feature collection.
+ * @returns {Maybe<FeatureCollection>} if it can be parsed and checked.
+ * @returns {Nothing} otherwise.
+ */
 export const validateFeatureCollection = (
   fc: unknown
 ): Maybe<FeatureCollection> => {

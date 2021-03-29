@@ -17,6 +17,7 @@ import {
   isPointArray,
   isPolygonArray,
 } from "./Coordinates";
+
 import { record } from "./Record";
 
 /** Basic GeoJSON FeatureTypes */
@@ -39,7 +40,16 @@ const featureHasGeometry = (geom: record): boolean => {
     : false;
 };
 
-export const validateFeatureGeometry = (geometry: record | null): Maybe<Geometry> => {
+/**
+ * Validates a given record and eventually returns a GeoJSON Geometry object.
+ * According to the spec, null values are also valid geometries, but the parser
+ * will nevertheless issue a warning.
+ *
+ * @param geometry a possible geometry record
+ */
+export const validateFeatureGeometry = (
+  geometry: record | null
+): Maybe<Geometry> => {
   if (geometry === null) {
     return Just(<Geometry>(<unknown>null));
   }
