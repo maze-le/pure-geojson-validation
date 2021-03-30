@@ -7,9 +7,9 @@ import { isRecord, record } from "./Shared";
 
 /**
  * Checks if a given feature is valid and has sane coordinate values.
- * If a geometry fails sanity cheks on the coordinate space a null-geometry 
+ * If a geometry fails sanity cheks on the coordinate space a null-geometry
  * is created and a warning is issued.
- * 
+ *
  * @param feat an eventual feature
  */
 export const validateFeature = (feat: unknown): Maybe<Feature> => {
@@ -18,11 +18,16 @@ export const validateFeature = (feat: unknown): Maybe<Feature> => {
     .ifNothing(() => console.warn("Feature has an invalid property space"))
     .orDefault({});
 
-  return isRecord(feat).chain((f) => asFeature(f, props));
+  return isRecord(feat).chain((f) =>
+    asFeature(f, isRecord(props).orDefault({}))
+  );
 };
 
-const validateFeatureProps = (feat: record): Maybe<record> =>
-  Maybe.fromPredicate(() => typeof feat.properties === "object", feat);
+const validateFeatureProps = (feat: record): Maybe<unknown> =>
+  Maybe.fromPredicate(
+    () => typeof feat.properties === "object",
+    feat.properties
+  );
 
 const asFeature = (feat: record, props: record): Maybe<Feature> =>
   typeof feat["geometry"] === "object"

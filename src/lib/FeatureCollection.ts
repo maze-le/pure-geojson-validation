@@ -19,7 +19,7 @@ const hasFeatureArray = (x: record) =>
   });
 
 /**
- * Checks if a feature collection has an valid feature array with valid members.
+ * Checks if a feature collection has a valid feature array with valid members.
  * @returns eventually Just the Feature collection if it's valid, Nothing otheriwse.
  **/
 const checkFeatures = (x: FeatureCollection): Maybe<FeatureCollection> => {

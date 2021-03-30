@@ -20,13 +20,14 @@ import {
 import { record } from "./Shared";
 
 /** Basic GeoJSON FeatureTypes */
-export const geometryTypes = [
-  "MultiPolygon",
+export const geometryTypes: string[] = [
   "Polygon",
-  "MultiLineString",
-  "MultiPoint",
+  "MultiPolygon",
   "LineString",
+  "MultiLineString",
   "Point",
+  "MultiPoint",
+  "GeometryCollection",
 ];
 
 const featureHasGeometry = (geom: record): boolean => {
@@ -34,10 +35,22 @@ const featureHasGeometry = (geom: record): boolean => {
     return true;
   }
 
+  if (typeof geom !== "object") {
+    return false;
+  }
+
   return typeof geom["type"] === "string"
     ? geometryTypes.includes(geom["type"])
     : false;
 };
+
+type Geom =
+  | LineString
+  | MultiLineString
+  | MultiPoint
+  | MultiPolygon
+  | Point
+  | Polygon;
 
 /**
  * Validates a given record and eventually returns a GeoJSON Geometry object.
@@ -89,19 +102,19 @@ export const validateFeatureGeometry = (
 };
 
 /**
- * Executes 'geometryTest' on the geometry 'geom' and eventually turns it in into a
+ * Executes 'test' on the geometry 'geom' and eventually turns it in into a
  * GeoJSON geometry.
  *
- * @param geometryTest a geometry test function as found in "src/Coordinates.ts"
+ * @param test a predicate (function that returns boolean) as found in "src/Coordinates.ts"
  * @param geom the geometry that should be tested
  * @param featureType the resulting geojson geometry type
  */
 const testWith = <T>(
-  geometryTest: (x: Geometry) => boolean,
-  geom: Geometry,
+  test: (x: Coordinates) => boolean,
+  geom: Geom,
   featureType: GeoJsonGeometryTypes
 ): Maybe<T> =>
-  Maybe.fromPredicate(() => geometryTest(geom), geom["coordinates"])
+  Maybe.fromPredicate(() => test(geom["coordinates"]), geom["coordinates"])
     .ifNothing(() => console.error(`Invalid ${featureType} feature`))
     .chain((coords: Coordinates) =>
       Just(<T>(<unknown>{ type: featureType, coordinates: coords }))
@@ -126,5 +139,5 @@ const validatePolygon = (geom: Polygon): Maybe<Polygon> =>
 
 const validateMultiPolygon = (geom: MultiPolygon): Maybe<MultiPolygon> =>
   testWith<MultiPolygon>(isPolygonArray, geom, "MultiPolygon").ifNothing(() =>
-    console.error(geom)
+    console.info(`coordinates: ${geom.coordinates}`)
   );
