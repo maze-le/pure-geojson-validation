@@ -24,9 +24,9 @@ const geographicCoordinates = (bbox: BBoxTuple<number>): Maybe<BBox> =>
   );
 
 /**
- * A bounding box is geographic 'fence' around a feature. It is valid when it is
- * a numbered array with 4 or 6 coordinate values. The coordinates run from
- * the southwesterly point to the northeasterly point.
+ * A bounding box is geographic 'fence' around a feature or geometry. It is
+ * valid when it is a numbered array with 4 or 6 coordinate values. The
+ * coordinates run from the southwesterly point to the northeasterly point.
  *
  * Lat coordinate values must be between -180° and 180°.
  * Lon coordinate values must be between -90° and 90°.
@@ -38,10 +38,9 @@ const geographicCoordinates = (bbox: BBoxTuple<number>): Maybe<BBox> =>
  * @returns Nothing if bbox is invalid.
  * @see https://tools.ietf.org/html/rfc7946
  **/
-export const validateBBox = (bbox: unknown): Maybe<BBox> => {
-  return isDefined(bbox)
+export const validateBBox = (bbox: unknown): Maybe<BBox> =>
+  isDefined(bbox)
     .chain(isArray)
     .chain(bboxLength)
     .chain(allNumbers)
     .chain(geographicCoordinates);
-};

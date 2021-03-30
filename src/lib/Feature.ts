@@ -2,8 +2,8 @@ import { Feature, Geometry } from "geojson";
 import { Just, Maybe, Nothing } from "purify-ts";
 
 import { validateBBox } from "./BBox";
-import { isRecord, record } from "./Record";
 import { validateFeatureGeometry } from "./Geometry";
+import { isRecord, record } from "./Shared";
 
 /**
  * Checks if a given feature is valid and has sane coordinate values.

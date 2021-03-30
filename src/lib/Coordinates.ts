@@ -4,33 +4,23 @@ export type Coordinates = Position | Position[] | Position[][] | Position[][][];
 const notOnce = <T>(array: T[], f: (x: T) => boolean) => !array.some(f);
 
 /** @returns true if 'multipolygon' is an array of polygon geometries. **/
-export const isPolygonArray = (multipolygon: unknown): boolean => {
-  if (!Array.isArray(multipolygon)) {
-    return false;
-  }
-
-  return notOnce(multipolygon, (x) => !isLineArray(x));
-};
+export const isPolygonArray = (multipolygon: unknown): boolean =>
+  Array.isArray(multipolygon)
+    ? notOnce(multipolygon, (x) => !isLineArray(x))
+    : false;
 
 /** @returns true if 'multiline' is an array of line geometries. **/
-export const isLineArray = (multiline: unknown): boolean => {
-  if (!Array.isArray(multiline)) {
-    return false;
-  }
-
-  return notOnce(multiline, (x) => !isPointArray(x));
-};
+export const isLineArray = (multiline: unknown): boolean =>
+  Array.isArray(multiline)
+    ? notOnce(multiline, (x) => !isPointArray(x))
+    : false;
 
 /** @returns true if 'multipoint' is an array of point geometries. **/
-export const isPointArray = (multipoint: unknown): boolean => {
-  if (!Array.isArray(multipoint)) {
-    return false;
-  }
-
-  return notOnce(multipoint, (x) => !isPoint(x));
-};
+export const isPointArray = (multipoint: unknown): boolean =>
+  Array.isArray(multipoint) ? notOnce(multipoint, (x) => !isPoint(x)) : false;
 
 /**
+ * Checks whether a given object 'p' represents a GeoJSON Point object.
  * A point is the datatype for a single coordinate, represented by
  * an array with 2 or 3 numbers. The array has the following semantics:
  *
@@ -38,35 +28,25 @@ export const isPointArray = (multipoint: unknown): boolean => {
  *  1. entry: longitude -- angle between -90.0 and 90.0
  *  1. (optional) entry: height
  *
- * Further entries are not invalid, but ignored.
+ * Further entries (coordinate dimensions) are not invalid, but ignored.
  *
- * @returns true if position is a valid position geometry.
+ * @returns true if p is a valid point geometry.
  * @see https://tools.ietf.org/html/rfc7946
  **/
-export const isPoint = (position: unknown): boolean => {
-  if (!Array.isArray(position)) {
-    return false;
-  }
+export const isPoint = (p: unknown): boolean =>
+  isArray(p) && ofMinLength(<unknown[]>p, 2) && allNumbers(<unknown[]>p)
+    ? isLat((<unknown[]>p)[0]) && isLon((<unknown[]>p)[1])
+    : false;
 
-  if (position.length < 2) {
-    return false;
-  }
+const isArray = (x: unknown) => Array.isArray(x);
+const ofMinLength = (xs: unknown[], len: number) => xs.length >= len;
+const allNumbers = (xs: unknown[]): boolean =>
+  !xs.some((elem) => typeof elem !== "number");
 
-  if (position.some((x) => typeof x !== "number")) {
-    return false;
-  }
-
-  const isCoordinatePair = isLat(position[0]) && isLon(position[1]);
-
-  return position.length === 2
-    ? isCoordinatePair
-    : isCoordinatePair && isHeight(position[2]);
-};
-
+/** checks if lat is a number and represents an angle between -180.0° and 180.0° */
 export const isLat = (lat: unknown): boolean =>
   typeof lat === "number" && lat >= -180.0 && lat <= 180.0;
 
+/** checks if lon is a number and represents an angle between -90.0° and 90.0° */
 export const isLon = (lon: unknown): boolean =>
   typeof lon === "number" && lon >= -90.0 && lon <= 90.0;
-
-export const isHeight = (h: unknown): boolean => typeof h === "number";

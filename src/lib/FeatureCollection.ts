@@ -4,8 +4,7 @@ import { Feature, FeatureCollection } from "geojson";
 import { validateBBox } from "./BBox";
 import { validateFeature } from "./Feature";
 
-import { isDefined } from "./Shared";
-import { isRecord, record } from "./Record";
+import { isDefined, isRecord, record } from "./Shared";
 
 const hasFcType = (featureCollection: record) =>
   Maybe.fromPredicate(
@@ -14,9 +13,9 @@ const hasFcType = (featureCollection: record) =>
   ).ifNothing(() => console.error("FeatureCollection type mismatch"));
 
 const hasFeatureArray = (x: record) =>
-  Maybe.fromPredicate(() => !Array.isArray(x.features), <FeatureCollection>{
+  Maybe.fromPredicate(() => Array.isArray(x.features), <FeatureCollection>{
     features: x.features,
-    type: x.type,
+    type: "FeatureCollection",
   });
 
 /**

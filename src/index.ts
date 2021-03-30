@@ -1,3 +1,3 @@
-import { parseFeatureCollection } from "./lib/PureGeoJson";
+import { maybeFeatureCollection } from "./lib/PureGeoJson";
 
-export { parseFeatureCollection };
+export { maybeFeatureCollection };

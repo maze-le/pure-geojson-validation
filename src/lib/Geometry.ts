@@ -17,8 +17,7 @@ import {
   isPointArray,
   isPolygonArray,
 } from "./Coordinates";
-
-import { record } from "./Record";
+import { record } from "./Shared";
 
 /** Basic GeoJSON FeatureTypes */
 export const geometryTypes = [
@@ -111,17 +110,21 @@ const testWith = <T>(
 const validatePoint = (geom: Point): Maybe<Point> =>
   testWith<Point>(isPoint, geom, "Point");
 
-const validateMultiPoint = (geom: Geometry): Maybe<MultiPoint> =>
+const validateMultiPoint = (geom: MultiPoint): Maybe<MultiPoint> =>
   testWith<MultiPoint>(isPointArray, geom, "MultiPoint");
 
-const validateLineString = (geom: Geometry): Maybe<LineString> =>
+const validateLineString = (geom: LineString): Maybe<LineString> =>
   testWith<LineString>(isPointArray, geom, "LineString");
 
-const validateMultiLineString = (geom: Geometry): Maybe<MultiLineString> =>
+const validateMultiLineString = (
+  geom: MultiLineString
+): Maybe<MultiLineString> =>
   testWith<MultiLineString>(isLineArray, geom, "MultiLineString");
 
-const validatePolygon = (geom: Geometry): Maybe<Polygon> =>
+const validatePolygon = (geom: Polygon): Maybe<Polygon> =>
   testWith<Polygon>(isLineArray, geom, "Polygon");
 
-const validateMultiPolygon = (geom: Geometry): Maybe<MultiPolygon> =>
-  testWith<MultiPolygon>(isPolygonArray, geom, "MultiPolygon");
+const validateMultiPolygon = (geom: MultiPolygon): Maybe<MultiPolygon> =>
+  testWith<MultiPolygon>(isPolygonArray, geom, "MultiPolygon").ifNothing(() =>
+    console.error(geom)
+  );

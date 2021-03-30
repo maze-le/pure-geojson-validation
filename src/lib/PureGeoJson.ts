@@ -6,15 +6,26 @@ import { validateFeatureCollection } from "./FeatureCollection";
 const runJsonParser = (content: string) => JSON.parse(content);
 
 /**
- * Attempts to parse and validate the content string as GeoJSON Feature Collection.
- * Sanity checks are performed on coordinate values and bounding boxes, if they fail
- * the function returns Nothing.
+ * Attempts to parse and validate the content string as Maybe of a
+ * GeoJSON FeatureCollection. Sanity checks are performed on coordinate
+ * values and bounding boxes, if they fail the function returns with
+ * the associated geometries set to _null_.
  *
- * @param content the input that is shall be parsed and validated.
- * @returns {Nothing} if it cannot be parsed or validated.
- * @returns {Maybe<FeatureCollection>} if it can be parsed and checked.
+ * @param content the input that is be parsed and validated.
+ * @returns {Maybe<FeatureCollection>} if it can be parsed and validated.
+ * @returns {Nothing} otherwise.
+ *
+ * @see https://tools.ietf.org/html/rfc7946
+ * @see https://gigobyte.github.io/purify/adts/Maybe
  */
-export const parseFeatureCollection = (
+export const maybeFeatureCollection = (
   content: string
-): Maybe<FeatureCollection> =>
-  Maybe.encase(runJsonParser(content)).chain(validateFeatureCollection);
+): Maybe<FeatureCollection> => {
+  const json = runJsonParser(content);
+  const maybeGeoJson = validateFeatureCollection(json);
+
+  return maybeGeoJson;
+
+  // TODO: cleanup
+  // Maybe.encase(runJsonParser(content)).chain(validateFeatureCollection);
+};
