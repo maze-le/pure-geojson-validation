@@ -9,7 +9,7 @@ const runJsonParser = (content: string) => JSON.parse(content);
  * Attempts to parse and validate the content string as Maybe of a
  * GeoJSON FeatureCollection. Sanity checks are performed on coordinate
  * values and bounding boxes, if they fail the function returns with
- * the associated geometries set to _null_.
+ * the associated geometry set to _null_.
  *
  * @param content the input that is be parsed and validated.
  * @returns {Maybe<FeatureCollection>} if it can be parsed and validated.
