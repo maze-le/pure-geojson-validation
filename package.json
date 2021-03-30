@@ -1,11 +1,12 @@
 {
-  "name": "pure-geojson-parser",
+  "name": "pure-geojson-validation",
   "version": "0.1.0",
-  "description": "A geojson parser with purify-ts support.",
+  "description": "A geojson validator and coordinate checker with purify-ts support.",
   "main": "src/index.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc",
+    "coverage": "npx jest --coverage",
     "start": "node dist/index.js"
   },
   "keywords": [

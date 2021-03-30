@@ -2,17 +2,21 @@ import { readFileSync } from "fs";
 import { FeatureCollection } from "geojson";
 import { Nothing } from "purify-ts";
 
-import { maybeFeatureCollection } from "./../src/index";
+import { maybeFeatureCollection } from "../src/index";
 
 const notOnce = <T>(array: T[], f: (x: T) => boolean) => !array.some(f);
 
 describe("Natural Earth Dataset", () => {
+  let dataBuffer: string;
   let fc: FeatureCollection;
 
   beforeAll(() => {
-    const dataBuffer = readFileSync("./test/data/adm0-hires.geojson", {
+    dataBuffer = readFileSync("./test/data/adm0-hires.geojson", {
       encoding: "utf-8",
     });
+  });
+
+  beforeEach(() => {
     fc = maybeFeatureCollection(dataBuffer).unsafeCoerce();
   });
 

@@ -30,6 +30,14 @@ export const geometryTypes: string[] = [
   "GeometryCollection",
 ];
 
+type Geom =
+  | LineString
+  | MultiLineString
+  | MultiPoint
+  | MultiPolygon
+  | Point
+  | Polygon;
+
 const featureHasGeometry = (geom: record): boolean => {
   if (geom === null) {
     return true;
@@ -43,14 +51,6 @@ const featureHasGeometry = (geom: record): boolean => {
     ? geometryTypes.includes(geom["type"])
     : false;
 };
-
-type Geom =
-  | LineString
-  | MultiLineString
-  | MultiPoint
-  | MultiPolygon
-  | Point
-  | Polygon;
 
 /**
  * Validates a given record and eventually returns a GeoJSON Geometry object.
@@ -102,11 +102,11 @@ export const validateFeatureGeometry = (
 };
 
 /** Geometry factory */
-const geometry = <T>(type: string, coords: Coordinates) =>
-  Just(<T>(<unknown>{ type: type, coordinates: coords }));
+const geometry = <T>(type: string, coordinates: Coordinates) =>
+  Just(<T>(<unknown>{ type, coordinates }));
 
 /**
- * Executes 'test' on the geometry 'geom' and eventually turns it in into a
+ * Executes 'test' on the coordinates of the geometry 'geom' and eventually turns it in into a
  * GeoJSON geometry.
  *
  * @param test a predicate (function that returns boolean) as found in "src/Coordinates.ts"
