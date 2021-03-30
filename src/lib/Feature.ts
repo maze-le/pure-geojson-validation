@@ -34,7 +34,7 @@ const asFeature = (feat: record, props: record): Maybe<Feature> =>
     ? Just(feature(props, <record>feat["geometry"], feat.bbox))
     : Nothing;
 
-/** Factory method for features from a propery, geometry and eventual bounding box. */
+/** Factory method for features from a property, geometry and eventual bounding box. */
 const feature = (
   props: record,
   geom: record | null,

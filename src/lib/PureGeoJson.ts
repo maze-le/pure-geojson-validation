@@ -20,12 +20,5 @@ const runJsonParser = (content: string) => JSON.parse(content);
  */
 export const maybeFeatureCollection = (
   content: string
-): Maybe<FeatureCollection> => {
-  const json = runJsonParser(content);
-  const maybeGeoJson = validateFeatureCollection(json);
-
-  return maybeGeoJson;
-
-  // TODO: cleanup
-  // Maybe.encase(runJsonParser(content)).chain(validateFeatureCollection);
-};
+): Maybe<FeatureCollection> =>
+  Maybe.encase(() => runJsonParser(content)).chain(validateFeatureCollection);

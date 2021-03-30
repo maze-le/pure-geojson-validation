@@ -101,24 +101,26 @@ export const validateFeatureGeometry = (
   }
 };
 
+/** Geometry factory */
+const geometry = <T>(type: string, coords: Coordinates) =>
+  Just(<T>(<unknown>{ type: type, coordinates: coords }));
+
 /**
  * Executes 'test' on the geometry 'geom' and eventually turns it in into a
  * GeoJSON geometry.
  *
  * @param test a predicate (function that returns boolean) as found in "src/Coordinates.ts"
  * @param geom the geometry that should be tested
- * @param featureType the resulting geojson geometry type
+ * @param geomType the resulting geojson geometry type
  */
 const testWith = <T>(
   test: (x: Coordinates) => boolean,
   geom: Geom,
-  featureType: GeoJsonGeometryTypes
+  geomType: GeoJsonGeometryTypes
 ): Maybe<T> =>
   Maybe.fromPredicate(() => test(geom["coordinates"]), geom["coordinates"])
-    .ifNothing(() => console.error(`Invalid ${featureType} feature`))
-    .chain((coords: Coordinates) =>
-      Just(<T>(<unknown>{ type: featureType, coordinates: coords }))
-    );
+    .ifNothing(() => console.warn(`Invalid ${geomType} geometry`))
+    .chain((coords: Coordinates) => geometry(geomType, coords));
 
 const validatePoint = (geom: Point): Maybe<Point> =>
   testWith<Point>(isPoint, geom, "Point");
