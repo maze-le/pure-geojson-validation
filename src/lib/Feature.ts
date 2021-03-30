@@ -2,7 +2,7 @@ import { Feature, Geometry } from "geojson";
 import { Just, Maybe, Nothing } from "purify-ts";
 
 import { validateBBox } from "./BBox";
-import { validateFeatureGeometry } from "./Geometry";
+import { validateGeometry } from "./Geometry";
 import { isRecord, record } from "./Shared";
 
 /**
@@ -44,7 +44,7 @@ const feature = (
   const returnFeature: Feature = {
     type: "Feature",
     properties: props,
-    geometry: validateFeatureGeometry(geom).orDefault(
+    geometry: validateGeometry(geom).orDefault(
       <Geometry>(<unknown>null)
     ),
   };

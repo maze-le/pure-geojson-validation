@@ -20,7 +20,7 @@ import {
 import { record } from "./Shared";
 
 /** Basic GeoJSON FeatureTypes */
-export const geometryTypes: string[] = [
+export const geometryTypes: GeoJsonGeometryTypes[] = [
   "Polygon",
   "MultiPolygon",
   "LineString",
@@ -30,7 +30,7 @@ export const geometryTypes: string[] = [
   "GeometryCollection",
 ];
 
-type Geom =
+export type Geom =
   | LineString
   | MultiLineString
   | MultiPoint
@@ -48,7 +48,7 @@ const featureHasGeometry = (geom: record): boolean => {
   }
 
   return typeof geom["type"] === "string"
-    ? geometryTypes.includes(geom["type"])
+    ? geometryTypes.includes(<GeoJsonGeometryTypes>geom["type"])
     : false;
 };
 
@@ -59,9 +59,7 @@ const featureHasGeometry = (geom: record): boolean => {
  *
  * @param geometry a possible geometry record
  */
-export const validateFeatureGeometry = (
-  geometry: record | null
-): Maybe<Geometry> => {
+export const validateGeometry = (geometry: record | null): Maybe<Geometry> => {
   if (geometry === null) {
     return Just(<Geometry>(<unknown>null));
   }

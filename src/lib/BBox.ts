@@ -3,7 +3,7 @@ import { Maybe } from "purify-ts";
 import { isLat, isLon } from "./Coordinates";
 import { isArray, isDefined } from "./Shared";
 
-type BBoxTuple<T> = [T, T, T, T] | [T, T, T, T, T, T];
+export type BBoxTuple<T> = [T, T, T, T] | [T, T, T, T, T, T];
 
 const bboxLength = (array: unknown[]): Maybe<BBoxTuple<unknown>> =>
   Maybe.fromPredicate(
