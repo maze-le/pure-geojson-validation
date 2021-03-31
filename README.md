@@ -10,7 +10,11 @@ The library uses algorithmic data structures from the library: [purify-ts](https
 
 ### Limitations
 
-Currently the library only supports parsing and validating _FeatureCollections_ as top level object. The library currently cannot parse _GeometryCollection_ geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
+The __Polygon__ and __MultiPolygon__ geometries are currently __not evaluated__ in depth.
+
+The library __only__ supports parsing and validating __FeatureCollections as top level object__.
+
+The library currently __cannot parse GeometryCollection__ geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
 
 The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
 
@@ -180,20 +184,20 @@ const isPoint: (p: unknown) => boolean;
 ```
 Returns true if p is a point geometry as defined in [RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2).
 
-#### isPointArray
+#### isLine
 ```typescript
 const isPointArray: (pa: unknown) => boolean;
 ```
 Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.3](https://tools.ietf.org/html/rfc7946#section-3.1.3).
 
-#### isLineArray
+#### isPolygon
 ```typescript
 const isLineArray: (la: unknown) => boolean;
 ```
 
 Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5).
 
-#### isPolygonArray
+#### isMultiPolygon
 ```typescript
   const isPolygonArray: (polya: unknown) => boolean;
 ```

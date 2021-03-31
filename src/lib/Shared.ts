@@ -1,5 +1,8 @@
 import { Maybe } from "purify-ts";
 
+/** A shorthand for a negative existence condition on an array. */
+export const notOnce = <T>(array: T[], f: (x: T) => boolean) => !array.some(f);
+
 /** A shorthand type for objects with entries of unknown value. */
 export type record = Record<string, unknown>;
 

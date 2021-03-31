@@ -10,14 +10,12 @@ import {
   Polygon,
 } from "geojson";
 
-import {
-  Coordinates,
-  isLineArray,
-  isPoint,
-  isPointArray,
-  isPolygonArray,
-} from "./Coordinates";
+import { Coordinates } from "./Coordinates";
 import { record } from "./Shared";
+
+import { validatePoint } from "./Point";
+import { validateLineString, validateMultiPoint } from "./Line";
+import { isMultiPolygon, isPolygon } from "./Polygon";
 
 /** Basic GeoJSON FeatureTypes */
 export const geometryTypes: GeoJsonGeometryTypes[] = [
@@ -111,7 +109,7 @@ const geometry = <T>(type: string, coordinates: Coordinates) =>
  * @param geom the geometry that should be tested
  * @param geomType the resulting geojson geometry type
  */
-const testWith = <T>(
+export const testWith = <T>(
   test: (x: Coordinates) => boolean,
   geom: Geom,
   geomType: GeoJsonGeometryTypes
@@ -120,24 +118,15 @@ const testWith = <T>(
     .ifNothing(() => console.warn(`Invalid ${geomType} geometry`))
     .chain((coords: Coordinates) => geometry(geomType, coords));
 
-const validatePoint = (geom: Point): Maybe<Point> =>
-  testWith<Point>(isPoint, geom, "Point");
-
-const validateMultiPoint = (geom: MultiPoint): Maybe<MultiPoint> =>
-  testWith<MultiPoint>(isPointArray, geom, "MultiPoint");
-
-const validateLineString = (geom: LineString): Maybe<LineString> =>
-  testWith<LineString>(isPointArray, geom, "LineString");
-
 const validateMultiLineString = (
   geom: MultiLineString
 ): Maybe<MultiLineString> =>
-  testWith<MultiLineString>(isLineArray, geom, "MultiLineString");
+  testWith<MultiLineString>(isPolygon, geom, "MultiLineString");
 
 const validatePolygon = (geom: Polygon): Maybe<Polygon> =>
-  testWith<Polygon>(isLineArray, geom, "Polygon");
+  testWith<Polygon>(isPolygon, geom, "Polygon");
 
 const validateMultiPolygon = (geom: MultiPolygon): Maybe<MultiPolygon> =>
-  testWith<MultiPolygon>(isPolygonArray, geom, "MultiPolygon").ifNothing(() =>
+  testWith<MultiPolygon>(isMultiPolygon, geom, "MultiPolygon").ifNothing(() =>
     console.info(`coordinates: ${geom.coordinates}`)
   );

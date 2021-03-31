@@ -1,6 +1,6 @@
 import { BBox } from "geojson";
 import { Maybe } from "purify-ts";
-import { isLat, isLon } from "./Coordinates";
+import { isLat, isLon } from "./Point";
 import { isArray, isDefined } from "./Shared";
 
 export type BBoxTuple<T> = [T, T, T, T] | [T, T, T, T, T, T];

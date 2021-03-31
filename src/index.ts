@@ -11,16 +11,10 @@ import {
   tryFeatureCollection,
 } from "./lib/PureGeoJson";
 
-import {
-  Coordinates,
-  Position,
-  isLat,
-  isLineArray,
-  isLon,
-  isPoint,
-  isPointArray,
-  isPolygonArray,
-} from "./lib/Coordinates";
+import { Coordinates, Position } from "./lib/Coordinates";
+import { isLat, isLon, isPoint } from "./lib/Point";
+import { isLine } from "./lib/Line";
+import { isMultiPolygon, isPolygon } from "./lib/Polygon";
 
 export {
   /** Shorthand type for objects with entries of unknown value. */
@@ -86,11 +80,11 @@ export {
    **/
   isPoint,
   /** @returns true if 'multipoint' is an array of point geometries. **/
-  isPointArray,
+  isLine,
   /** @returns true if 'multiline' is an array of line geometries. **/
-  isLineArray,
+  isPolygon,
   /** @returns true if 'multipolygon' is an array of polygon geometries. **/
-  isPolygonArray,
+  isMultiPolygon,
   /**
    * Validates bounding boxes.
    *

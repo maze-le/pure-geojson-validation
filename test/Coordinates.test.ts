@@ -1,12 +1,8 @@
-import {
-  Coordinates,
-  isLat,
-  isLineArray,
-  isLon,
-  isPoint,
-  isPointArray,
-  isPolygonArray,
-} from "../src/lib/Coordinates";
+import { Coordinates } from "../src/lib/Coordinates";
+import { isLat, isLon, isPoint } from "../src/lib/Point";
+import { isLine } from "../src/lib/Line";
+import { isMultiPolygon, isPolygon } from "../src/lib/Polygon";
+
 import { multipolygonCoords } from "./RealMPCoordinates";
 
 /** Tests for coordinate validations. */
@@ -127,93 +123,90 @@ describe("Coordinates", () => {
       expect(isPoint([1, "2"])).toBe(false));
   });
 
-  describe("isPointArray(l)", () => {
+  describe("isLine(l)", () => {
     it("returns true if l is a positive point array", () =>
-      expect(isPointArray(validPA)).toBe(true));
+      expect(isLine(validPA)).toBe(true));
     it("returns true if l is a zero point array", () =>
-      expect(isPointArray(validPA0)).toBe(true));
+      expect(isLine(validPA0)).toBe(true));
     it("returns true if l has negative points", () =>
-      expect(isPointArray(validNegativePA)).toBe(true));
+      expect(isLine(validNegativePA)).toBe(true));
     it("returns true if l has only one entry", () =>
-      expect(isPointArray(onlyOnePA)).toBe(true));
-    it("returns true if l is empty", () =>
-      expect(isPointArray(emptyPA)).toBe(true));
+      expect(isLine(onlyOnePA)).toBe(true));
+    it("returns true if l is empty", () => expect(isLine(emptyPA)).toBe(true));
     it("returns false if l has latitudes higher than 180.0", () =>
-      expect(isPointArray(invalidHighLatPA)).toBe(false));
+      expect(isLine(invalidHighLatPA)).toBe(false));
     it("returns false if l has longitudes higher than 90.0", () =>
-      expect(isPointArray(invalidHighLonPA)).toBe(false));
+      expect(isLine(invalidHighLonPA)).toBe(false));
     it("returns false if l has latitudes lower than 180.0", () =>
-      expect(isPointArray(invalidLowLatPA)).toBe(false));
+      expect(isLine(invalidLowLatPA)).toBe(false));
     it("returns false if l has longitudes lower than 90.0", () =>
-      expect(isPointArray(invalidLowLonPA)).toBe(false));
+      expect(isLine(invalidLowLonPA)).toBe(false));
     it("returns false if l is not a point array", () =>
-      expect(isPointArray({ q: 111111 })).toBe(false));
-    it("returns false if l is null", () =>
-      expect(isPointArray(null)).toBe(false));
+      expect(isLine({ q: 111111 })).toBe(false));
+    it("returns false if l is null", () => expect(isLine(null)).toBe(false));
     it("returns false if l is has null entries", () =>
       expect(
-        isPointArray([
+        isLine([
           [127.3, null],
           [0, 0],
         ])
       ).toBe(false));
     it("returns false if l is has string entries", () =>
       expect(
-        isPointArray([
+        isLine([
           [1, "2"],
           [1, "2"],
         ])
       ).toBe(false));
   });
 
-  describe("isLineArray(l)", () => {
+  describe("isPolygon(l)", () => {
     it("returns true if l is valid", () =>
-      expect(isLineArray([validPA, validNegativePA])).toBe(true));
+      expect(isPolygon([validPA, validNegativePA])).toBe(true));
     it("returns true if l has zero values", () =>
-      expect(isLineArray([validPA0, validPA0, validPA0, validNegativePA])).toBe(
+      expect(isPolygon([validPA0, validPA0, validPA0, validNegativePA])).toBe(
         true
       ));
-    it("returns true if l is empty", () => expect(isLineArray([])).toBe(true));
-    it("returns false if l is null", () =>
-      expect(isLineArray(null)).toBe(false));
+    it("returns true if l is empty", () => expect(isPolygon([])).toBe(true));
+    it("returns false if l is null", () => expect(isPolygon(null)).toBe(false));
     it("returns false if l has null entries", () =>
-      expect(isLineArray([null])).toBe(false));
+      expect(isPolygon([null])).toBe(false));
     it("returns false if l is undefined", () =>
-      expect(isLineArray(undefined)).toBe(false));
+      expect(isPolygon(undefined)).toBe(false));
     it("returns false if l is not a line array", () =>
-      expect(isLineArray({ not: "lineArray" })).toBe(false));
+      expect(isPolygon({ not: "lineArray" })).toBe(false));
     it("returns false if l has invalid latitude lines", () =>
-      expect(isLineArray([invalidHighLatPA, validPA0])).toBe(false));
+      expect(isPolygon([invalidHighLatPA, validPA0])).toBe(false));
     it("returns false if l has invalid longitude lines", () =>
-      expect(isLineArray([validPA0, invalidLowLonPA])).toBe(false));
+      expect(isPolygon([validPA0, invalidLowLonPA])).toBe(false));
   });
 
-  describe("isPolygonArray(pa)", () => {
+  describe("isMultiPolygon(pa)", () => {
     it("returns true if pa is valid", () =>
       expect(
-        isPolygonArray([
+        isMultiPolygon([
           [validPA, validNegativePA],
           [validPA, validNegativePA],
         ])
       ).toBe(true));
 
     it("returns true if pa has one entry", () =>
-      expect(isPolygonArray([[validPA, validNegativePA]])).toBe(true));
+      expect(isMultiPolygon([[validPA, validNegativePA]])).toBe(true));
     it("returns true if pa is empty", () =>
-      expect(isPolygonArray([])).toBe(true));
+      expect(isMultiPolygon([])).toBe(true));
 
     it("returns true with 'real' multipolygon coordinates", () =>
-      expect(isPolygonArray(multipolygonCoords)).toBe(true));
+      expect(isMultiPolygon(multipolygonCoords)).toBe(true));
 
     it("returns false if pa is invalid", () =>
       expect(
-        isPolygonArray([
+        isMultiPolygon([
           [invalidHighLatPA, validNegativePA],
           [validPA, validNegativePA],
         ])
       ).toBe(false));
 
     it("returns false if pa is null", () =>
-      expect(isPolygonArray(null)).toBe(false));
+      expect(isMultiPolygon(null)).toBe(false));
   });
 });
