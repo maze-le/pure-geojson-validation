@@ -5,6 +5,7 @@
     "allowJs": false,
     "outDir": "dist",
     "rootDir": "src",
+    "declaration": true,
 
     "alwaysStrict": true,
     "noImplicitAny": false,
