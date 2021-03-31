@@ -1,5 +1,6 @@
 import { Maybe } from "purify-ts";
 
+/** A shorthand type for objects with entries of unknown value. */
 export type record = Record<string, unknown>;
 
 export const isDefined = (x: unknown): Maybe<unknown> =>
