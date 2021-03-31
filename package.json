@@ -1,11 +1,13 @@
 {
   "name": "pure-geojson-validation",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A geojson validator and coordinate checker with purify-ts support.",
-  "main": "index.js",
-  "types": "src/typings.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "npm run clean:dist && npm run clean:index",
+    "clean:dist": "rimraf dist",
+    "clean:index": "rimraf index.*",
     "build": "npm run clean && tsc",
     "test": "jest",
     "coverage": "npx jest --coverage",
