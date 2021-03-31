@@ -6,7 +6,7 @@ _pure-geojson-validation_ is a library to check the internal consistency of geoj
 
 The library will use the geojson type definitions as found in the package: `@types/geojson`.
 
-The library uses algorithmic data structures from the library: [purify-ts](https://gigobyte.github.io/purify] and is intended to work with it. Especially the [Maybe monad](https://gigobyte.github.io/purify/adts/Maybe) is used extensively when parsing and validating a possible geojson string- or object. It is worth considering to look at _purify_, even if you don't intend to work with monads.
+The library uses algorithmic data structures from the library: [purify-ts](https://gigobyte.github.io/purify) and is intended to work with it. Especially the [Maybe monad](https://gigobyte.github.io/purify/adts/Maybe) is used extensively when parsing and validating a possible geojson string- or object. It is worth considering to look at _purify_, even if you don't intend to work with monads.
 
 ## Usage
 
@@ -153,19 +153,19 @@ Returns true if lat is a number representing a longitude angle in WSG84.
 
 #### isPoint: (p: unknown) => boolean
 
-Returns true if p is a point geometry as defined in [RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2].
+Returns true if p is a point geometry as defined in [RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2).
 
 #### isPointArray: (pa: unknown) => boolean
 
-Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.3](https://tools.ietf.org/html/rfc7946#section-3.1.3].
+Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.3](https://tools.ietf.org/html/rfc7946#section-3.1.3).
 
 #### isLineArray: (la: unknown) => boolean
 
-Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5].
+Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5).
 
 #### isPolygonArray: (polya: unknown) => boolean
 
-Returns true if _polya_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.7](https://tools.ietf.org/html/rfc7946#section-3.1.7].
+Returns true if _polya_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.7](https://tools.ietf.org/html/rfc7946#section-3.1.7).
 
 ### Validation Functions
 
