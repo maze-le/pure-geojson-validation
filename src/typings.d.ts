@@ -15,32 +15,33 @@ import {
   Geom as geom,
 } from "./index";
 
-declare namespace PureGeojson {
-  /** Types */
-  type record = rec;
-  type BBox = geojsonBBox;
-  type Coordinates = coords;
-  type Position = geojsonPosition;
-  type Geom = geom;
+declare type record = rec;
+declare type BBox = geojsonBBox;
+declare type Coordinates = coords;
+declare type Position = geojsonPosition;
+declare type Geom = geom;
 
-  /** constants */
-  const geometryTypes: GeoJsonGeometryTypes[];
+/** constants */
+declare const geometryTypes: GeoJsonGeometryTypes[];
 
-  /** parser */
-  function maybeFeatureCollection(content: string): Maybe<FeatureCollection>;
-  function tryFeatureCollection(content: string): FeatureCollection;
+/** parser */
+declare function maybeFeatureCollection(
+  content: string
+): Maybe<FeatureCollection>;
+declare function tryFeatureCollection(content: string): FeatureCollection;
 
-  /** coordinate checks */
-  function isLat(lat: unknown): boolean;
-  function isLon(lon: unknown): boolean;
-  function isPoint(point: unknown): boolean;
-  function isPointArray(multipoint: unknown): boolean;
-  function isLineArray(multiline: unknown): boolean;
-  function isPolygonArray(multipolygon: unknown): boolean;
+/** coordinate checks */
+declare function isLat(lat: unknown): boolean;
+declare function isLon(lon: unknown): boolean;
+declare function isPoint(point: unknown): boolean;
+declare function isPointArray(multipoint: unknown): boolean;
+declare function isLineArray(multiline: unknown): boolean;
+declare function isPolygonArray(multipolygon: unknown): boolean;
 
-  /** validation functions */
-  function validateBBox(bbox: unknown): Maybe<BBox>;
-  function validateFeature(feat: unknown): Maybe<Feature>;
-  function validateFeatureCollection(fc: unknown): Maybe<FeatureCollection>;
-  function validateGeometry(geometry: record | null): Maybe<Geometry>;
-}
+/** validation functions */
+declare function validateBBox(bbox: unknown): Maybe<BBox>;
+declare function validateFeature(feat: unknown): Maybe<Feature>;
+declare function validateFeatureCollection(
+  fc: unknown
+): Maybe<FeatureCollection>;
+declare function validateGeometry(geometry: record | null): Maybe<Geometry>;
