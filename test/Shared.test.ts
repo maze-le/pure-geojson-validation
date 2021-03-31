@@ -14,7 +14,6 @@ describe("Shared Functions", () => {
   const aNumberedRecord = { 1: "this" };
 
   describe("isArray(x)", () => {
-
     it("returns Just(array), if x is of type array", () =>
       expect(isArray(validArray)).toEqual(Just(validArray)));
     it("returns Just(array), if x is an empty array", () =>
@@ -40,7 +39,6 @@ describe("Shared Functions", () => {
       expect(isDefined([32])).toEqual(Just([32])));
     it("returns Just(x) when x is null", () =>
       expect(isDefined(null)).toEqual(Just(null)));
-
     it("returns Nothing when x is undefined", () =>
       expect(isDefined(undefined)).toBe(Nothing));
   });
@@ -48,7 +46,7 @@ describe("Shared Functions", () => {
   describe("isRecord(x)", () => {
     it("returns Just(x) when x is an object, indexed by strings", () =>
       expect(isRecord(aRecord)).toStrictEqual(Just(aRecord)));
-    it("returns Nothing when x is an object, indexed by number strings", () =>
+    it("returns Just(x) when x is an object, indexed by number strings", () =>
       expect(isRecord(aNumberedRecord)).toStrictEqual(Just(aNumberedRecord)));
     it("returns Nothing when x is an array", () =>
       expect(isRecord([aRecord])).toBe(Nothing));

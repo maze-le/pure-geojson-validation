@@ -1,4 +1,10 @@
-import { BBox, Feature, FeatureCollection, GeoJsonGeometryTypes, Geometry, MultiPoint } from "geojson";
+import {
+  BBox,
+  Feature,
+  FeatureCollection,
+  GeoJsonGeometryTypes,
+  Geometry,
+} from "geojson";
 import { Maybe } from "purify-ts";
 
 import {
@@ -23,11 +29,11 @@ declare namespace PureGeojson {
 
   /** coordinate checks */
   const isLat: (lat: unknown) => boolean;
-  const isLon: (lat: unknown) => boolean;
-  const isPoint: (lat: unknown) => boolean;
-  const isLineArray: (lat: unknown) => boolean;
-  const isPointArray: (lat: unknown) => boolean;
-  const isPolygonArray: (lat: unknown) => boolean;
+  const isLon: (lon: unknown) => boolean;
+  const isPoint: (point: unknown) => boolean;
+  const isPointArray: (multipoint: unknown) => boolean;
+  const isLineArray: (multiline: unknown) => boolean;
+  const isPolygonArray: (multipolygon: unknown) => boolean;
 
   /** validation functions */
   const validateBBox: (bbox: unknown) => Maybe<BBox>;

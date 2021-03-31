@@ -4,6 +4,7 @@
     "rootDir": "../",
     "module": "commonjs",
     "skipLibCheck": true,
+    "resolveJsonModule": true,
   },
   "exclude": []
 }

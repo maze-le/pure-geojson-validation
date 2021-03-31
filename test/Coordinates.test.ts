@@ -21,12 +21,12 @@ describe("Coordinates", () => {
   const [nullLat, nullLon]: [unknown, unknown] = [null, null];
 
   /** Point Arrays */
-  const validPositivePA: Coordinates = [
+  const validPA: Coordinates = [
     [1.1, 1.2],
     [1.5, 1.3],
     [1.5, 1.3],
   ];
-  const validZeroPA: Coordinates = [
+  const validPA0: Coordinates = [
     [0, 0],
     [0, 0],
     [0, 0],
@@ -79,9 +79,10 @@ describe("Coordinates", () => {
     it("returns false if lat is too small", () =>
       expect(isLat(latTooSm)).toBe(false));
     it("returns false if lat is not a number", () =>
-      expect(isLat(notLat)).toBe(false));
+      expect(isLat(<number>notLat)).toBe(false));
     it("returns false if lat is null", () =>
-      expect(isLat(nullLat)).toBe(false));
+      expect(isLat(<number>nullLat)).toBe(false));
+    it("returns false if lat is a NaN", () => expect(isLat(NaN)).toBe(false));
   });
 
   describe("isLon(lon)", () => {
@@ -96,9 +97,10 @@ describe("Coordinates", () => {
     it("returns false if lon is too small", () =>
       expect(isLon(lonTooSm)).toBe(false));
     it("returns false if lon is not a number", () =>
-      expect(isLon(notLon)).toBe(false));
+      expect(isLon(<number>notLon)).toBe(false));
     it("returns false if lon is null", () =>
-      expect(isLon(nullLon)).toBe(false));
+      expect(isLon(<number>nullLon)).toBe(false));
+    it("returns false if lon is a NaN", () => expect(isLon(NaN)).toBe(false));
   });
 
   describe("isPoint(p)", () => {
@@ -127,9 +129,9 @@ describe("Coordinates", () => {
 
   describe("isPointArray(l)", () => {
     it("returns true if l is a positive point array", () =>
-      expect(isPointArray(validPositivePA)).toBe(true));
+      expect(isPointArray(validPA)).toBe(true));
     it("returns true if l is a zero point array", () =>
-      expect(isPointArray(validZeroPA)).toBe(true));
+      expect(isPointArray(validPA0)).toBe(true));
     it("returns true if l has negative points", () =>
       expect(isPointArray(validNegativePA)).toBe(true));
     it("returns true if l has only one entry", () =>
@@ -166,11 +168,11 @@ describe("Coordinates", () => {
 
   describe("isLineArray(l)", () => {
     it("returns true if l is valid", () =>
-      expect(isLineArray([validPositivePA, validNegativePA])).toBe(true));
+      expect(isLineArray([validPA, validNegativePA])).toBe(true));
     it("returns true if l has zero values", () =>
-      expect(
-        isLineArray([validZeroPA, validZeroPA, validZeroPA, validNegativePA])
-      ).toBe(true));
+      expect(isLineArray([validPA0, validPA0, validPA0, validNegativePA])).toBe(
+        true
+      ));
     it("returns true if l is empty", () => expect(isLineArray([])).toBe(true));
     it("returns false if l is null", () =>
       expect(isLineArray(null)).toBe(false));
@@ -181,22 +183,22 @@ describe("Coordinates", () => {
     it("returns false if l is not a line array", () =>
       expect(isLineArray({ not: "lineArray" })).toBe(false));
     it("returns false if l has invalid latitude lines", () =>
-      expect(isLineArray([invalidHighLatPA, validZeroPA])).toBe(false));
+      expect(isLineArray([invalidHighLatPA, validPA0])).toBe(false));
     it("returns false if l has invalid longitude lines", () =>
-      expect(isLineArray([validZeroPA, invalidLowLonPA])).toBe(false));
+      expect(isLineArray([validPA0, invalidLowLonPA])).toBe(false));
   });
 
   describe("isPolygonArray(pa)", () => {
     it("returns true if pa is valid", () =>
       expect(
         isPolygonArray([
-          [validPositivePA, validNegativePA],
-          [validPositivePA, validNegativePA],
+          [validPA, validNegativePA],
+          [validPA, validNegativePA],
         ])
       ).toBe(true));
 
     it("returns true if pa has one entry", () =>
-      expect(isPolygonArray([[validPositivePA, validNegativePA]])).toBe(true));
+      expect(isPolygonArray([[validPA, validNegativePA]])).toBe(true));
     it("returns true if pa is empty", () =>
       expect(isPolygonArray([])).toBe(true));
 
@@ -207,7 +209,7 @@ describe("Coordinates", () => {
       expect(
         isPolygonArray([
           [invalidHighLatPA, validNegativePA],
-          [validPositivePA, validNegativePA],
+          [validPA, validNegativePA],
         ])
       ).toBe(false));
 

@@ -35,7 +35,7 @@ export const isPointArray = (multipoint: unknown): boolean =>
  **/
 export const isPoint = (p: unknown): boolean =>
   isArray(p) && ofMinLength(<unknown[]>p, 2) && allNumbers(<unknown[]>p)
-    ? isLat((<unknown[]>p)[0]) && isLon((<unknown[]>p)[1])
+    ? isLat((<number[]>p)[0]) && isLon((<number[]>p)[1])
     : false;
 
 const isArray = (x: unknown) => Array.isArray(x);
@@ -44,9 +44,9 @@ const allNumbers = (xs: unknown[]): boolean =>
   !xs.some((elem) => typeof elem !== "number");
 
 /** checks if lat is a number and represents an angle between -180.0° and 180.0° */
-export const isLat = (lat: unknown): boolean =>
+export const isLat = (lat: number): boolean =>
   typeof lat === "number" && lat >= -180.0 && lat <= 180.0;
 
 /** checks if lon is a number and represents an angle between -90.0° and 90.0° */
-export const isLon = (lon: unknown): boolean =>
+export const isLon = (lon: number): boolean =>
   typeof lon === "number" && lon >= -90.0 && lon <= 90.0;
