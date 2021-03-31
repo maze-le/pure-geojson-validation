@@ -1,6 +1,6 @@
 {
   "name": "pure-geojson-validation",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A geojson validator and coordinate checker with purify-ts support.",
   "main": "index.js",
   "types": "src/typings.d.ts",
