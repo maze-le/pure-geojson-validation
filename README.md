@@ -8,6 +8,12 @@ The library will use the geojson type definitions as found in the package: `@typ
 
 The library uses algorithmic data structures from the library: [purify-ts](https://gigobyte.github.io/purify) and is intended to work with it. Especially the [Maybe monad](https://gigobyte.github.io/purify/adts/Maybe) is used extensively when parsing and validating a possible geojson string- or object. It is worth considering to look at _purify_, even if you don't intend to work with monads.
 
+### Limitations
+
+Currently the library only supports parsing and validating _FeatureCollections_ as top level object. The library currently cannot parse _GeometryCollection_ geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
+
+The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
+
 ## Usage
 
 ### Installation
@@ -56,13 +62,25 @@ function getFeatureCollectionOrNull() {
 }
 ```
 
-### Limitations
-
-Currently the library only supports parsing and validating _FeatureCollections_ as top level object. The library currently cannot parse _GeometryCollection_ geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
-
-The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
-
 ## Library Types, Methods and Objects
+
+```typescript
+import { tryFeatureCollection } from "pure-geojson-validation";
+
+function getFeatureCollectionOrNull() {
+  try {
+    const content = readFileSync("path/to/file.geojson");
+    const unsafeFC = tryFeatureCollection(content);
+
+    console.info("successfully parsed feature collection");
+
+    return unsafeFC;
+  } catch (err) {
+    console.error("could not parse feature collection");
+    return null;
+  }
+}
+```
 
 ### Types
 
@@ -136,52 +154,77 @@ const tryFeatureCollection: (content: string) => FeatureCollection;
 
 ### Coordinate Predicates
 
-The following methods check if coordinate values are valid and within the bounds of a WSG84 coordinate projection. These are predicates and will always return a boolean value. The arguments (except for isLat and isLon) are of type unknown, but are assumed to be nested number arrays, depending on the chosen geometry type. If you want to work with these predicates and with `Maybe` create a `Maybe` from a predicate like this:
+The following methods check if coordinate values are valid and within the bounds of a WSG84 coordinate projection. The arguments (except for isLat and isLon) are of type unknown, but are assumed to be nested number arrays, depending on the chosen geometry type. If you want to work with these predicates and with `Maybe` create a `Maybe` from a predicate like this:
 
 ```typescript
 import { isPoint } from "pure-geojson-validation";
 const maybePoint = (point: unknown) => Maybe.fromPredicate(isPoint, point);
 ```
 
-#### isLat: (lat: number) => boolean
+#### isLat
+```typescript
+const isLat: (lat: number) => boolean;
+```
 
 Returns true if lat is a number representing a latitude angle in WSG84.
 
-#### isLon: (lat: number) => boolean
-
+#### isLon
+```typescript
+const isLon: (lat: number) => boolean;
+```
 Returns true if lat is a number representing a longitude angle in WSG84.
 
-#### isPoint: (p: unknown) => boolean
-
+#### isPoint
+```typescript
+const isPoint: (p: unknown) => boolean;
+```
 Returns true if p is a point geometry as defined in [RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2).
 
-#### isPointArray: (pa: unknown) => boolean
-
+#### isPointArray
+```typescript
+const isPointArray: (pa: unknown) => boolean;
+```
 Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.3](https://tools.ietf.org/html/rfc7946#section-3.1.3).
 
-#### isLineArray: (la: unknown) => boolean
+#### isLineArray
+```typescript
+const isLineArray: (la: unknown) => boolean;
+```
 
 Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5).
 
-#### isPolygonArray: (polya: unknown) => boolean
-
+#### isPolygonArray
+```typescript
+  const isPolygonArray: (polya: unknown) => boolean;
+```
 Returns true if _polya_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.7](https://tools.ietf.org/html/rfc7946#section-3.1.7).
 
 ### Validation Functions
 
-#### validateBBox: (bbox: unknown) => Maybe<BBox>;
+#### validateBBox
+```typescript
+  const validateBBox: (bbox: unknown) => Maybe<BBox>;
+```
 
-Validates a possible bounding box and eventually returns with a GeoJSON _BBox_ object.
+Validates a possible bounding box and eventually returns with a GeoJSON _BBox_ object. _bbox_ is expected to be an array of length 4 or 6.
 
 #### validateFeature: (feat: unknown) => Maybe<Feature>;
-
-Validates a possible _GeoJSON_ feature and eventually returns with a _Feature_ object as found in `@types/geojson`.
+```typescript
+  const validateFeature: (feat: unknown) => Maybe<Feature>;
+```
+Validates a possible _GeoJSON_ feature and eventually returns with a _Feature_ object as found in `@types/geojson`. _feat_ is expected to be a _GeoJSON_ feature object ([RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2)).
 
 #### validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
+```typescript
+  const validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
+```
 
 Validates a possible _GeoJSON_ feature collections and eventually returns with a _FeatureCollection_ object as found in `@types/geojson`.
 
 #### validateGeometry: (geometry: record | null) => Maybe<Geometry>;
+```typescript
+  const validateGeometry: (geometry: record | null) => Maybe<Geometry>;
+```
 
 Validates a possible _GeoJSON_ geometries and eventually returns with a _Geometry_ object as found in `@types/geojson`. Beware that **null** Geometries are valid according to the _GeoJSON_ spec and a call like: `validateGeometry(null)` will return `Just(null)`.
 

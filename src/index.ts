@@ -1,5 +1,7 @@
+import { BBox } from "geojson";
+
 import { record } from "./lib/Shared";
-import { BBoxTuple, validateBBox } from "./lib/BBox";
+import { validateBBox } from "./lib/BBox";
 import { validateFeatureCollection } from "./lib/FeatureCollection";
 import { validateFeature } from "./lib/Feature";
 import { Geom, validateGeometry, geometryTypes } from "./lib/Geometry";
@@ -22,7 +24,7 @@ import {
 
 export {
   record,
-  BBoxTuple,
+  BBox,
   Coordinates,
   Position,
   Geom,
