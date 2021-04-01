@@ -22,6 +22,7 @@ import {
   isLinearRingArray,
   warnWindingOrderPolygon,
   warnWindingOrderRing,
+  warnWindingOrderPolygonArray,
 } from "./lib/Polygon";
 
 export {
@@ -91,7 +92,7 @@ export {
   isLineString,
   /** @returns true if 'multiline' is an array of line geometries. **/
   isMultiLineString,
-  /** @returns true if 'multiline' is an array of line geometries. **/
+  /** @returns true if 'polygon' is an array of line geometries. **/
   isPolygon,
   /** @returns true if 'multipolygon' is an array of polygon geometries. **/
   isMultiPolygon,
@@ -108,6 +109,7 @@ export {
   warnWindingOrderRing,
   /** when xs has rings with a left hand winding: issue a warning */
   warnWindingOrderPolygon,
+  warnWindingOrderPolygonArray,
   /**
    * Validates bounding boxes.
    *

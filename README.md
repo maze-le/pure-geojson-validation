@@ -10,11 +10,11 @@ The library uses algorithmic data structures from the library: [purify-ts](https
 
 ### Limitations
 
-The __Polygon__ and __MultiPolygon__ geometries are currently __not evaluated__ in depth.
+The **Polygon** and **MultiPolygon** geometries are currently **not evaluated** in depth.
 
-The library __only__ supports parsing and validating __FeatureCollections as top level object__.
+The library **only** supports parsing and validating **FeatureCollections as top level object**.
 
-The library currently __cannot parse GeometryCollection__ geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
+The library currently **cannot parse GeometryCollection** geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
 
 The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
 
@@ -84,6 +84,14 @@ function getFeatureCollectionOrNull() {
     return null;
   }
 }
+```
+
+### Constants
+
+The Array of possible geometry types is exposed to give non-typescript users access to valid geometry types. The `geometryTypes` array contains all currently supported geometry types as string.
+
+```typescript
+const geometryTypes: GeoJsonGeometryTypes[];
 ```
 
 ### Types
@@ -166,6 +174,7 @@ const maybePoint = (point: unknown) => Maybe.fromPredicate(isPoint, point);
 ```
 
 #### isLat
+
 ```typescript
 const isLat: (lat: number) => boolean;
 ```
@@ -173,99 +182,127 @@ const isLat: (lat: number) => boolean;
 Returns true if lat is a number representing a latitude angle in WSG84.
 
 #### isLon
+
 ```typescript
 const isLon: (lat: number) => boolean;
 ```
+
 Returns true if lat is a number representing a longitude angle in WSG84.
 
 #### isPoint
+
 ```typescript
 const isPoint: (p: unknown) => boolean;
 ```
+
 Returns true if p is a point geometry as defined in [RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2).
 
-#### isLine
+#### isLineString
+
 ```typescript
 const isLine: (pa: unknown) => boolean;
 ```
-Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.3](https://tools.ietf.org/html/rfc7946#section-3.1.3).
+
+Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.4](https://tools.ietf.org/html/rfc7946#section-3.1.4).
+
+#### isMultiLineString
+
+```typescript
+const isMultiLineString: (pa: unknown) => boolean;
+```
+
+Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5).
 
 #### isPolygon
+
 ```typescript
-const isLineArray: (la: unknown) => boolean;
+const isPolygon: (la: unknown) => boolean;
 ```
 
-Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5).
+Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.6](https://tools.ietf.org/html/rfc7946#section-3.1.6).
 
 #### isMultiPolygon
+
 ```typescript
-  const isPolygonArray: (polya: unknown) => boolean;
+const isMultiPolygon: (multipolygon: unknown) => boolean;
 ```
-Returns true if _polya_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.7](https://tools.ietf.org/html/rfc7946#section-3.1.7).
+
+Returns true if _multipolygon_ is a polygon array as defined in [RFC7946,3.1.7](https://tools.ietf.org/html/rfc7946#section-3.1.7).
 
 #### isRightHand
+
 ```typescript
   const isRightHand = (xs: Position[]): boolean;
 ```
+
 Checks whether a ring (closed LineString) has right hand winding number. [see RFC7946,3.1.6](https://tools.ietf.org/html/rfc7946#section-3.1.6)
 The time complexity of this function is O(n) with n: length of xs
+
 #### isLinearRing
+
 ```typescript
   const isLinearRing = (xs: unknown[][]): boolean;
 ```
+
 Returns true if xs is an array of closed line segments
+
 #### isLinearRingArray
+
 ```typescript
   const isLinearRingArray = (xs: unknown[][][]): boolean;
 ```
+
 Returns true if xs is an array of linear rings
+
 #### warnWindingOrderRing
+
 ```typescript
   const warnWindingOrderRing = (xs: Position[]): void
 ```
+
 When xs has a left hand winding: issue a warning
+
 #### warnWindingOrderPolygon
+
 ```typescript
   const warnWindingOrderPolygon = (xs: Position[][]): void
 ```
+
 When xs has rings with a left hand winding: issue a warning
 
 ### Validation Functions
 
 #### validateBBox
+
 ```typescript
-  const validateBBox: (bbox: unknown) => Maybe<BBox>;
+const validateBBox: (bbox: unknown) => Maybe<BBox>;
 ```
 
 Validates a possible bounding box and eventually returns with a GeoJSON _BBox_ object. _bbox_ is expected to be an array of length 4 or 6.
 
 #### validateFeature: (feat: unknown) => Maybe<Feature>;
+
 ```typescript
-  const validateFeature: (feat: unknown) => Maybe<Feature>;
+const validateFeature: (feat: unknown) => Maybe<Feature>;
 ```
+
 Validates a possible _GeoJSON_ feature and eventually returns with a _Feature_ object as found in `@types/geojson`. _feat_ is expected to be a _GeoJSON_ feature object ([RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2)).
 
 #### validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
+
 ```typescript
-  const validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
+const validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
 ```
 
 Validates a possible _GeoJSON_ feature collections and eventually returns with a _FeatureCollection_ object as found in `@types/geojson`.
 
 #### validateGeometry: (geometry: record | null) => Maybe<Geometry>;
-```typescript
-  const validateGeometry: (geometry: record | null) => Maybe<Geometry>;
-```
-
-Validates a possible _GeoJSON_ geometries and eventually returns with a _Geometry_ object as found in `@types/geojson`. Beware that **null** Geometries are valid according to the _GeoJSON_ spec and a call like: `validateGeometry(null)` will return `Just(null)`.
-
-### Constants
-
-The Array of possible geometry types is exposed to give non-typescript users access to valid geometry types. The `geometryTypes` array contains all currently supported geometry types as string.
 
 ```typescript
-const geometryTypes: GeoJsonGeometryTypes[];
+const validateGeometry: (geometry: record | null) => Maybe<Geometry>;
 ```
+
+Validates a possible _GeoJSON_ geometries and eventually returns with a _Geometry_ object as found in `@types/geojson`. Beware that **null** Geometries are valid according to the _GeoJSON_ spec and a call like: `validateGeometry(null)` will return `Just(null)`. If polygons or multipolygons are found with left hand windign number a warning is issued.
 
 ## Future Developments
 

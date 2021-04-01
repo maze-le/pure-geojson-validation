@@ -2,50 +2,71 @@ import { Position } from "./Coordinates";
 import { isLine } from "./Line";
 import { notOnce } from "./Shared";
 
-/** shorthand for last element of array */
-const last = <T>(xs: T[]) => xs[xs.length - 1];
-
-/** Integration operator for the area sum -- continuous: ∂x * ∂y => discrete: Δx * Δy */
+/** Integration operator for the winding order area integral. */
 const dXdY = (prev: Position, curr: Position) =>
   (curr[0] - prev[0]) * (curr[1] + prev[1]);
-
-/**
- * Integrate over dXdY to get the sum of the area. Because of Typescrips array manipulation
- * complexity we have to use Array.pop and integrate "backwards", from upper limit to lower
- * limit --> If the sum is negative, the ring xs performs a left hand rotation (not right).
- *
- * @see: https://en.wikipedia.org/wiki/Greens_theorem
- **/
-const integrateArea = (total: number, prev: Position, xs: Position[]): number =>
-  xs.length < 1
-    ? total
-    : total + integrateArea(dXdY(prev, last(xs)), xs.pop()!, xs);
 
 /**
  * Checks whether a ring (closed LineString) has right hand winding number.
  * @see https://tools.ietf.org/html/rfc7946#section-3.1.6
  **/
-export const isRightHand = (xs: Position[]): boolean =>
-  isClosed(xs) && integrateArea(0, last(xs), xs) < 0;
+export const isRightHand = (ring: Position[]): boolean => {
+  let prev, curr;
+
+  let integral = 0;
+  for (let i = 1; i < ring.length; i++) {
+    prev = curr || ring[0];
+    curr = ring[i];
+    integral += dXdY(prev, curr);
+  }
+
+  return integral > 0;
+};
 
 /** when xs has a left hand winding: issue a warning */
 export const warnWindingOrderRing = (xs: Position[]): void => {
   if (!isRightHand(xs)) {
-    console.warn("ring with left hand winding order");
+    console.warn("ring with left hand winding order.");
   }
 };
 
 /** when xs has rings with a left hand winding: issue a warning */
-export const warnWindingOrderPolygon = (xs: Position[][]): void => {
+export const warnWindingOrderPolygon = (xs: Position[][], id = ""): void => {
+  const label = id.length > 0 ? "" : ` (${id})`;
   xs.some((x: Position[]) => {
     if (!isRightHand(x)) {
-      console.warn("polygon with ring with left hand winding order");
+      console.warn(`polygon with left hand ring.${label}.`);
       return true;
     }
 
     return false;
   });
 };
+
+/** when xs has polygons with left hand rings: issue a warning */
+export const warnWindingOrderPolygonArray = (
+  xs: Position[][][],
+  id = ""
+): void => {
+  const label = id.length > 0 ? "" : ` (${id})`;
+  xs.some((poly: Position[][]) => {
+    const inner = poly.some((ring: Position[]) => {
+      if (!isRightHand(ring)) {
+        console.warn(`multipolygon with left hand ring${label}.`);
+        return true;
+      }
+
+      return false;
+    });
+
+    if (inner) return true;
+
+    return false;
+  });
+};
+
+/** shorthand for last element of array */
+const last = <T>(xs: T[]) => xs[xs.length - 1];
 
 /** A closed line segment is an array of points with p_0 === p_last */
 const isClosed = (xs: unknown[][]) =>

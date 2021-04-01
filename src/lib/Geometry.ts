@@ -12,7 +12,12 @@ import {
 
 import { record } from "./Shared";
 import { Coordinates } from "./Coordinates";
-import { isMultiPolygon, isPolygon } from "./Polygon";
+import {
+  isMultiPolygon,
+  isPolygon,
+  warnWindingOrderPolygon,
+  warnWindingOrderPolygonArray,
+} from "./Polygon";
 import { isLine, isMultiLineString, isMultipoint } from "./Line";
 import { isPoint } from "./Point";
 
@@ -102,10 +107,16 @@ export const validateGeometry = (geometry: record | null): Maybe<Geometry> => {
       return testWith<MultiPoint>(isMultiLineString, geom, "MultiLineString");
 
     case "Polygon":
-      return testWith<Polygon>(isPolygon, geom, "Polygon");
+      return testWith<Polygon>(isPolygon, geom, "Polygon").ifJust(() =>
+        warnWindingOrderPolygon(geom.coordinates)
+      );
 
     case "MultiPolygon":
-      return testWith<MultiPolygon>(isMultiPolygon, geom, "MultiPolygon");
+      return testWith<MultiPolygon>(
+        isMultiPolygon,
+        geom,
+        "MultiPolygon"
+      ).ifJust(() => warnWindingOrderPolygonArray(geom.coordinates));
 
     case "GeometryCollection":
       console.error("GeometryCollection not implemented");
