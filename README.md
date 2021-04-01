@@ -186,7 +186,7 @@ Returns true if p is a point geometry as defined in [RFC7946,3.1.2](https://tool
 
 #### isLine
 ```typescript
-const isPointArray: (pa: unknown) => boolean;
+const isLine: (pa: unknown) => boolean;
 ```
 Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.3](https://tools.ietf.org/html/rfc7946#section-3.1.3).
 
@@ -202,6 +202,33 @@ Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,
   const isPolygonArray: (polya: unknown) => boolean;
 ```
 Returns true if _polya_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.7](https://tools.ietf.org/html/rfc7946#section-3.1.7).
+
+#### isRightHand
+```typescript
+  const isRightHand = (xs: Position[]): boolean;
+```
+Checks whether a ring (closed LineString) has right hand winding number. [see RFC7946,3.1.6](https://tools.ietf.org/html/rfc7946#section-3.1.6)
+The time complexity of this function is O(n) with n: length of xs
+#### isLinearRing
+```typescript
+  const isLinearRing = (xs: unknown[][]): boolean;
+```
+Returns true if xs is an array of closed line segments
+#### isLinearRingArray
+```typescript
+  const isLinearRingArray = (xs: unknown[][][]): boolean;
+```
+Returns true if xs is an array of linear rings
+#### warnWindingOrderRing
+```typescript
+  const warnWindingOrderRing = (xs: Position[]): void
+```
+When xs has a left hand winding: issue a warning
+#### warnWindingOrderPolygon
+```typescript
+  const warnWindingOrderPolygon = (xs: Position[][]): void
+```
+When xs has rings with a left hand winding: issue a warning
 
 ### Validation Functions
 

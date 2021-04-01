@@ -1,11 +1,3 @@
-import { Point } from "geojson";
-import { Maybe } from "purify-ts";
-import { testWith } from "./Geometry";
-
-/** checks if lon is a number and represents an angle between -90.0° and 90.0° */
-export const validatePoint = (point: Point): Maybe<Point> =>
-  testWith<Point>(isPoint, point, "Point");
-
 /**
  * Checks whether a given object 'p' represents a GeoJSON Point object.
  * A point is the datatype for a single coordinate, represented by

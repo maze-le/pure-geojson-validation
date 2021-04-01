@@ -132,7 +132,7 @@ describe("Coordinates", () => {
       expect(isLine(validNegativePA)).toBe(true));
     it("returns true if l has only one entry", () =>
       expect(isLine(onlyOnePA)).toBe(true));
-    it("returns true if l is empty", () => expect(isLine(emptyPA)).toBe(true));
+    it("returns true if l is empty", () => expect(isLine(emptyPA)).toBe(false));
     it("returns false if l has latitudes higher than 180.0", () =>
       expect(isLine(invalidHighLatPA)).toBe(false));
     it("returns false if l has longitudes higher than 90.0", () =>
@@ -160,14 +160,52 @@ describe("Coordinates", () => {
       ).toBe(false));
   });
 
+  const polygon = [
+    [
+      [123, 44],
+      [124, 42],
+      [124, 49],
+      [123, 44],
+    ],
+  ];
+
+  const polygonWithZeroCoords = [
+    [
+      [0, 0],
+      [1, 0],
+      [2, 2],
+      [-3, 4],
+      [0, 0],
+    ],
+  ];
   describe("isPolygon(l)", () => {
     it("returns true if l is valid", () =>
-      expect(isPolygon([validPA, validNegativePA])).toBe(true));
+      expect(isPolygon(polygon)).toBe(true));
     it("returns true if l has zero values", () =>
-      expect(isPolygon([validPA0, validPA0, validPA0, validNegativePA])).toBe(
-        true
-      ));
-    it("returns true if l is empty", () => expect(isPolygon([])).toBe(true));
+      expect(isPolygon(polygonWithZeroCoords)).toBe(true));
+
+    it("returns false if l is empty", () => expect(isPolygon([])).toBe(false));
+
+    it("returns false if l has only 1 entry", () =>
+      expect(isPolygon([[2, 3]])).toBe(false));
+
+    it("returns false if l has only 2 entries", () =>
+      expect(
+        isPolygon([
+          [2, 3],
+          [2, 3],
+        ])
+      ).toBe(false));
+
+    it("returns false if l has only 3 entries", () =>
+      expect(
+        isPolygon([
+          [2, 3],
+          [4, 2],
+          [2, 3],
+        ])
+      ).toBe(false));
+
     it("returns false if l is null", () => expect(isPolygon(null)).toBe(false));
     it("returns false if l has null entries", () =>
       expect(isPolygon([null])).toBe(false));
@@ -183,15 +221,11 @@ describe("Coordinates", () => {
 
   describe("isMultiPolygon(pa)", () => {
     it("returns true if pa is valid", () =>
-      expect(
-        isMultiPolygon([
-          [validPA, validNegativePA],
-          [validPA, validNegativePA],
-        ])
-      ).toBe(true));
+      expect(isMultiPolygon([polygon, polygonWithZeroCoords])).toBe(true));
 
     it("returns true if pa has one entry", () =>
-      expect(isMultiPolygon([[validPA, validNegativePA]])).toBe(true));
+      expect(isMultiPolygon([polygon])).toBe(true));
+
     it("returns true if pa is empty", () =>
       expect(isMultiPolygon([])).toBe(true));
 

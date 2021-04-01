@@ -10,12 +10,11 @@ import {
   Polygon,
 } from "geojson";
 
-import { Coordinates } from "./Coordinates";
 import { record } from "./Shared";
-
-import { validatePoint } from "./Point";
-import { validateLineString, validateMultiPoint } from "./Line";
+import { Coordinates } from "./Coordinates";
 import { isMultiPolygon, isPolygon } from "./Polygon";
+import { isLine, isMultiLineString, isMultipoint } from "./Line";
+import { isPoint } from "./Point";
 
 /** Basic GeoJSON FeatureTypes */
 export const geometryTypes: GeoJsonGeometryTypes[] = [
@@ -51,6 +50,27 @@ const featureHasGeometry = (geom: record): boolean => {
 };
 
 /**
+ * Executes 'test' on the coordinates of the geometry 'geom' and maybe turns it in into a GeoJSON
+ * geometry.
+ *
+ * @param test a predicate (function that returns boolean) as found in "src/{Line,Point,Polygon}.ts"
+ * @param geom the geometry that should be tested
+ * @param geomType the resulting geojson geometry type
+ */
+export const testWith = <T>(
+  test: (x: Coordinates) => boolean,
+  geom: Geom,
+  geomType: GeoJsonGeometryTypes
+): Maybe<T> =>
+  Maybe.fromPredicate(() => test(geom["coordinates"]), geom["coordinates"])
+    .ifNothing(() => console.warn(`Invalid ${geomType} geometry`))
+    .chain((coords: Coordinates) => geometry(geomType, coords));
+
+/** Geometry factory */
+const geometry = <T>(type: string, coordinates: Coordinates) =>
+  Just(<T>(<unknown>{ type, coordinates }));
+
+/**
  * Validates a given record and eventually returns a GeoJSON Geometry object.
  * According to the spec, null values are also valid geometries, but the parser
  * will nevertheless issue a warning.
@@ -70,22 +90,22 @@ export const validateGeometry = (geometry: record | null): Maybe<Geometry> => {
 
   switch (geom["type"]) {
     case "Point":
-      return validatePoint(geom);
+      return testWith<Point>(isPoint, geom, "Point");
 
     case "MultiPoint":
-      return validateMultiPoint(geom);
+      return testWith<MultiPoint>(isMultipoint, geom, "MultiPoint");
 
     case "LineString":
-      return validateLineString(geom);
+      return testWith<MultiLineString>(isLine, geom, "LineString");
 
     case "MultiLineString":
-      return validateMultiLineString(geom);
+      return testWith<MultiPoint>(isMultiLineString, geom, "MultiLineString");
 
     case "Polygon":
-      return validatePolygon(geom);
+      return testWith<Polygon>(isPolygon, geom, "Polygon");
 
     case "MultiPolygon":
-      return validateMultiPolygon(geom);
+      return testWith<MultiPolygon>(isMultiPolygon, geom, "MultiPolygon");
 
     case "GeometryCollection":
       console.error("GeometryCollection not implemented");
@@ -96,37 +116,3 @@ export const validateGeometry = (geometry: record | null): Maybe<Geometry> => {
       return Nothing;
   }
 };
-
-/** Geometry factory */
-const geometry = <T>(type: string, coordinates: Coordinates) =>
-  Just(<T>(<unknown>{ type, coordinates }));
-
-/**
- * Executes 'test' on the coordinates of the geometry 'geom' and eventually turns it in into a
- * GeoJSON geometry.
- *
- * @param test a predicate (function that returns boolean) as found in "src/Coordinates.ts"
- * @param geom the geometry that should be tested
- * @param geomType the resulting geojson geometry type
- */
-export const testWith = <T>(
-  test: (x: Coordinates) => boolean,
-  geom: Geom,
-  geomType: GeoJsonGeometryTypes
-): Maybe<T> =>
-  Maybe.fromPredicate(() => test(geom["coordinates"]), geom["coordinates"])
-    .ifNothing(() => console.warn(`Invalid ${geomType} geometry`))
-    .chain((coords: Coordinates) => geometry(geomType, coords));
-
-const validateMultiLineString = (
-  geom: MultiLineString
-): Maybe<MultiLineString> =>
-  testWith<MultiLineString>(isPolygon, geom, "MultiLineString");
-
-const validatePolygon = (geom: Polygon): Maybe<Polygon> =>
-  testWith<Polygon>(isPolygon, geom, "Polygon");
-
-const validateMultiPolygon = (geom: MultiPolygon): Maybe<MultiPolygon> =>
-  testWith<MultiPolygon>(isMultiPolygon, geom, "MultiPolygon").ifNothing(() =>
-    console.info(`coordinates: ${geom.coordinates}`)
-  );

@@ -13,8 +13,16 @@ import {
 
 import { Coordinates, Position } from "./lib/Coordinates";
 import { isLat, isLon, isPoint } from "./lib/Point";
-import { isLine } from "./lib/Line";
-import { isMultiPolygon, isPolygon } from "./lib/Polygon";
+import { isLine as isLineString, isMultiLineString } from "./lib/Line";
+import {
+  isRightHand,
+  isMultiPolygon,
+  isPolygon,
+  isLinearRing,
+  isLinearRingArray,
+  warnWindingOrderPolygon,
+  warnWindingOrderRing,
+} from "./lib/Polygon";
 
 export {
   /** Shorthand type for objects with entries of unknown value. */
@@ -80,11 +88,26 @@ export {
    **/
   isPoint,
   /** @returns true if 'multipoint' is an array of point geometries. **/
-  isLine,
+  isLineString,
+  /** @returns true if 'multiline' is an array of line geometries. **/
+  isMultiLineString,
   /** @returns true if 'multiline' is an array of line geometries. **/
   isPolygon,
   /** @returns true if 'multipolygon' is an array of polygon geometries. **/
   isMultiPolygon,
+  /**
+   * Checks whether a ring (closed LineString) has right hand winding number.
+   * @see https://tools.ietf.org/html/rfc7946#section-3.1.6
+   **/
+  isRightHand,
+  /** @returns true if xs is an array of closed line segments */
+  isLinearRing,
+  /** @returns true if xs is an array of linear rings */
+  isLinearRingArray,
+  /** when xs has a left hand winding: issue a warning */
+  warnWindingOrderRing,
+  /** when xs has rings with a left hand winding: issue a warning */
+  warnWindingOrderPolygon,
   /**
    * Validates bounding boxes.
    *

@@ -26,15 +26,16 @@ describe("Natural Earth Dataset", () => {
     it("should have a features property", () =>
       expect(fc).toHaveProperty("features"));
 
-    it("should have only multipolygon geometries", () =>
+    it("should have only multipolygon geometries", () => {
       expect(
         notOnce(
-          fc.features.map((f) => f.geometry.type),
+          fc.features.map((f) => (f.geometry ? f.geometry.type : "--")),
           (t) => t !== "MultiPolygon"
         )
-      ).toBe(true));
+      ).toBe(true);
+    });
 
-    it("should have Natural Earth properties", () =>
+    it("should have some Natural Earth properties", () =>
       expect(
         notOnce(
           fc.features.map((f) =>

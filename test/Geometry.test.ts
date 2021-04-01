@@ -24,11 +24,14 @@ describe("Geometry", () => {
       const pointGeom: record = { type: "Point", coordinates: point };
       expect(validateGeometry(pointGeom)).toEqual(Just(pointGeom));
 
-      const pointArray: Coordinates = [[0, 0], point, [11.2, 1]];
+      const pointArray: Coordinates = [[0, 0], point, [11.2, 1], [0, 0]];
       const lineGeom = { type: "LineString", coordinates: pointArray };
       expect(validateGeometry(lineGeom)).toEqual(Just(lineGeom));
 
-      const lineArray: Coordinates = [[[0, 0], point], pointArray, pointArray];
+      const lineArray: Coordinates = [
+        [[0, 0], point, [133, 22], [0, 0]],
+        pointArray,
+      ];
       const mlineGeom = { type: "MultiLineString", coordinates: lineArray };
       const polyGeom = { type: "Polygon", coordinates: lineArray };
       expect(validateGeometry(mlineGeom)).toEqual(Just(mlineGeom));
