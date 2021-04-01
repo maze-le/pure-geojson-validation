@@ -5,14 +5,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "npm run clean:dist && npm run clean:coverage",
+    "clean": "npm run clean:dist && npm run clean:coverage && npm run clean:index",
     "clean:dist": "rimraf dist",
+    "clean:index": "rimraf index.*",
     "clean:coverage": "rimraf coverage",
-    "build": "npm run clean && tsc",
+    "build": "npm run build:ts && npm run build:package",
+    "build:ts": "tsc",
+    "build:package": "rollup -c",
     "test": "jest",
     "coverage": "npx jest --coverage",
     "coverage/": "npx jest --coverage",
-    "prepublishOnly": "npm run clean && tsc && rollup -c"
+    "prepublishOnly": "npm run clean && npm run test && npm run build"
   },
   "keywords": [
     "geojson",
