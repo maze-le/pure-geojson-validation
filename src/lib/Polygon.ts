@@ -2,25 +2,27 @@ import { Position } from "./Coordinates";
 import { isLine } from "./Line";
 import { notOnce } from "./Shared";
 
-/** Integration operator for the winding order integral. */
-const dXdY = (prev: Position, curr: Position) =>
-  (curr[0] - prev[0]) * (curr[1] + prev[1]);
-
 /**
  * Checks whether a ring (closed LineString) has right hand winding number.
  * @see https://tools.ietf.org/html/rfc7946#section-3.1.6
+ * @see https://en.wikipedia.org/wiki/Shoelace_formula
  **/
 export const isRightHand = (ring: Position[]): boolean => {
   let prev, curr;
+  let x0, x1, y0, y1;
 
-  let integral = 0;
+  let sum = 0;
   for (let i = 1; i < ring.length; i++) {
     prev = curr || ring[0];
     curr = ring[i];
-    integral += dXdY(prev, curr);
+
+    [x0, y0] = curr;
+    [x1, y1] = prev;
+
+    sum += (x0 - x1) * (y0 + y1);
   }
 
-  return integral > 0;
+  return sum > 0;
 };
 
 /** when xs has a left hand winding: issue a warning */

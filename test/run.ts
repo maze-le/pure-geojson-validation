@@ -1,3 +1,7 @@
+/**
+ * Test Runner
+ */
+
 import { readFileSync } from "fs";
 import { maybeFeatureCollection } from "../src/lib/PureGeoJson";
 
