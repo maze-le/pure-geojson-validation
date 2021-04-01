@@ -68,24 +68,6 @@ function getFeatureCollectionOrNull() {
 
 ## Library Types, Methods and Objects
 
-```typescript
-import { tryFeatureCollection } from "pure-geojson-validation";
-
-function getFeatureCollectionOrNull() {
-  try {
-    const content = readFileSync("path/to/file.geojson");
-    const unsafeFC = tryFeatureCollection(content);
-
-    console.info("successfully parsed feature collection");
-
-    return unsafeFC;
-  } catch (err) {
-    console.error("could not parse feature collection");
-    return null;
-  }
-}
-```
-
 ### Constants
 
 The Array of possible geometry types is exposed to give non-typescript users access to valid geometry types. The `geometryTypes` array contains all currently supported geometry types as string.
@@ -280,7 +262,7 @@ const validateBBox: (bbox: unknown) => Maybe<BBox>;
 
 Validates a possible bounding box and eventually returns with a GeoJSON _BBox_ object. _bbox_ is expected to be an array of length 4 or 6.
 
-#### validateFeature: (feat: unknown) => Maybe<Feature>;
+#### validateFeature
 
 ```typescript
 const validateFeature: (feat: unknown) => Maybe<Feature>;
@@ -288,7 +270,7 @@ const validateFeature: (feat: unknown) => Maybe<Feature>;
 
 Validates a possible _GeoJSON_ feature and eventually returns with a _Feature_ object as found in `@types/geojson`. _feat_ is expected to be a _GeoJSON_ feature object ([RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2)).
 
-#### validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
+#### validateFeatureCollection
 
 ```typescript
 const validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
@@ -296,7 +278,7 @@ const validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
 
 Validates a possible _GeoJSON_ feature collections and eventually returns with a _FeatureCollection_ object as found in `@types/geojson`.
 
-#### validateGeometry: (geometry: record | null) => Maybe<Geometry>;
+#### validateGeometry
 
 ```typescript
 const validateGeometry: (geometry: record | null) => Maybe<Geometry>;
