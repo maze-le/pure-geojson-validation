@@ -3,7 +3,6 @@ import { Feature, FeatureCollection } from "geojson";
 
 import { validateBBox } from "./BBox";
 import { validateFeature } from "./Feature";
-
 import { isDefined, isRecord, record } from "./Shared";
 
 const hasFcType = (featureCollection: record) =>
@@ -23,22 +22,19 @@ const hasFeatureArray = (x: record) =>
  * @returns eventually Just the Feature collection if it's valid, Nothing otheriwse.
  **/
 const checkFeatures = (x: FeatureCollection): Maybe<FeatureCollection> => {
-  const validFeatures = validateFeatures(x.features);
-  if (validFeatures.isNothing()) {
-    return Nothing;
-  }
+  return validateFeatures(x.features).chain((featureArray) => {
+    const featureCollection: FeatureCollection = {
+      type: "FeatureCollection",
+      features: featureArray,
+    };
 
-  const featureCollection: FeatureCollection = {
-    type: "FeatureCollection",
-    features: validFeatures.unsafeCoerce(),
-  };
+    const boundingBox = validateBBox(x.bbox);
+    if (boundingBox.isJust()) {
+      featureCollection.bbox = boundingBox.orDefault([0, 0, 0, 0]);
+    }
 
-  const boundingBox = validateBBox(x.bbox);
-  if (boundingBox.isJust()) {
-    featureCollection.bbox = boundingBox.orDefault([0, 0, 0, 0]);
-  }
-
-  return Just(featureCollection);
+    return Just(featureCollection);
+  });
 };
 
 /** @returns Just(Features) if all features in collection are valid. */

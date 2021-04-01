@@ -2,7 +2,7 @@ import { Position } from "./Coordinates";
 import { isLine } from "./Line";
 import { notOnce } from "./Shared";
 
-/** Integration operator for the winding order area integral. */
+/** Integration operator for the winding order integral. */
 const dXdY = (prev: Position, curr: Position) =>
   (curr[0] - prev[0]) * (curr[1] + prev[1]);
 
@@ -44,7 +44,7 @@ export const warnWindingOrderPolygon = (xs: Position[][], id = ""): void => {
 };
 
 /** when xs has polygons with left hand rings: issue a warning */
-export const warnWindingOrderPolygonArray = (
+export const warnWindingOrderMultiPolygon = (
   xs: Position[][][],
   id = ""
 ): void => {
@@ -65,7 +65,7 @@ export const warnWindingOrderPolygonArray = (
   });
 };
 
-/** shorthand for last element of array */
+/** Shorthand for last element of array */
 const last = <T>(xs: T[]) => xs[xs.length - 1];
 
 /** A closed line segment is an array of points with p_0 === p_last */

@@ -10,13 +10,13 @@ The library uses algorithmic data structures from the library: [purify-ts](https
 
 ### Limitations
 
-The **Polygon** and **MultiPolygon** geometries are currently **not evaluated** in depth.
+ * The library **only** supports parsing and validating **FeatureCollections as top level object**.
 
-The library **only** supports parsing and validating **FeatureCollections as top level object**.
+ * The library currently **cannot parse GeometryCollection** geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
 
-The library currently **cannot parse GeometryCollection** geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
+ * The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
 
-The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
+ * The **Polygon** and **MultiPolygon** geometries are checked for right handedness. If a left handed polygon-ring is found a warning is issued. The validator will not reverse the order of rings.
 
 ## Usage
 
@@ -179,6 +179,18 @@ const isPoint: (p: unknown) => boolean;
 
 Returns true if p is a point geometry as defined in [RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2).
 
+The time complexity of this function is O(1).
+
+#### isMultiPoint
+
+```typescript
+const isMultiPoint: (mp: unknown) => boolean;
+```
+
+Returns true if _mp_ is a multipoint geometry as defined in [RFC7946,3.1.3](https://tools.ietf.org/html/rfc7946#section-3.1.3).
+
+The time complexity of this function is O(1).
+
 #### isLineString
 
 ```typescript
@@ -186,6 +198,8 @@ const isLine: (pa: unknown) => boolean;
 ```
 
 Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.4](https://tools.ietf.org/html/rfc7946#section-3.1.4).
+
+The time complexity of this function is O(n), with n=length(pa).
 
 #### isMultiLineString
 
@@ -195,6 +209,8 @@ const isMultiLineString: (pa: unknown) => boolean;
 
 Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5).
 
+The time complexity of this function is O(n*m), with n=length(pa); m=length(pa).
+
 #### isPolygon
 
 ```typescript
@@ -202,6 +218,8 @@ const isPolygon: (la: unknown) => boolean;
 ```
 
 Returns true if _la_ is a polygon- or multiline geometry as defined in [RFC7946,3.1.6](https://tools.ietf.org/html/rfc7946#section-3.1.6).
+
+The time complexity of this function is O(n^2).
 
 #### isMultiPolygon
 
@@ -211,6 +229,8 @@ const isMultiPolygon: (multipolygon: unknown) => boolean;
 
 Returns true if _multipolygon_ is a polygon array as defined in [RFC7946,3.1.7](https://tools.ietf.org/html/rfc7946#section-3.1.7).
 
+The time complexity of this function is O(n^3).
+
 #### isRightHand
 
 ```typescript
@@ -218,7 +238,7 @@ Returns true if _multipolygon_ is a polygon array as defined in [RFC7946,3.1.7](
 ```
 
 Checks whether a ring (closed LineString) has right hand winding number. [see RFC7946,3.1.6](https://tools.ietf.org/html/rfc7946#section-3.1.6)
-The time complexity of this function is O(n) with n: length of xs
+The time complexity of this function is O(n) with n: length of xs.
 
 #### isLinearRing
 

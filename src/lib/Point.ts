@@ -1,3 +1,9 @@
+import { notOnce } from "./Shared";
+
+/** @returns true if 'multipoint' is an array of point geometries. **/
+export const isMultiPoint = (multipoint: unknown): boolean =>
+  Array.isArray(multipoint) ? notOnce(multipoint, (x) => !isPoint(x)) : false;
+  
 /**
  * Checks whether a given object 'p' represents a GeoJSON Point object.
  * A point is the datatype for a single coordinate, represented by

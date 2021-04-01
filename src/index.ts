@@ -12,7 +12,7 @@ import {
 } from "./lib/PureGeoJson";
 
 import { Coordinates, Position } from "./lib/Coordinates";
-import { isLat, isLon, isPoint } from "./lib/Point";
+import { isLat, isLon, isPoint, isMultiPoint } from "./lib/Point";
 import { isLine as isLineString, isMultiLineString } from "./lib/Line";
 import {
   isRightHand,
@@ -22,7 +22,7 @@ import {
   isLinearRingArray,
   warnWindingOrderPolygon,
   warnWindingOrderRing,
-  warnWindingOrderPolygonArray,
+  warnWindingOrderMultiPolygon,
 } from "./lib/Polygon";
 
 export {
@@ -89,6 +89,8 @@ export {
    **/
   isPoint,
   /** @returns true if 'multipoint' is an array of point geometries. **/
+  isMultiPoint,
+  /** @returns true if 'multipoint' is an array of point geometries. **/
   isLineString,
   /** @returns true if 'multiline' is an array of line geometries. **/
   isMultiLineString,
@@ -105,11 +107,22 @@ export {
   isLinearRing,
   /** @returns true if xs is an array of linear rings */
   isLinearRingArray,
-  /** when xs has a left hand winding: issue a warning */
+  /** When xs has a left hand winding: issue a warning */
   warnWindingOrderRing,
-  /** when xs has rings with a left hand winding: issue a warning */
+  /**
+   * When xs has rings with a left hand winding: issue a warning
+   * 
+   * @param xs a multipolygon array
+   * @param id a feature id identifying the array in case of an array.
+   **/
   warnWindingOrderPolygon,
-  warnWindingOrderPolygonArray,
+  /**
+   * When xs has polygons with left hand rings: issue a warning
+   * 
+   * @param xs a multipolygon
+   * @param id a feature id identifying the array in case of an array.
+   **/
+  warnWindingOrderMultiPolygon,
   /**
    * Validates bounding boxes.
    *

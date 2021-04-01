@@ -16,10 +16,10 @@ import {
   isMultiPolygon,
   isPolygon,
   warnWindingOrderPolygon,
-  warnWindingOrderPolygonArray,
+  warnWindingOrderMultiPolygon,
 } from "./Polygon";
-import { isLine, isMultiLineString, isMultipoint } from "./Line";
-import { isPoint } from "./Point";
+import { isLine, isMultiLineString } from "./Line";
+import { isPoint, isMultiPoint } from "./Point";
 
 /** Basic GeoJSON FeatureTypes */
 export const geometryTypes: GeoJsonGeometryTypes[] = [
@@ -98,7 +98,7 @@ export const validateGeometry = (geometry: record | null): Maybe<Geometry> => {
       return testWith<Point>(isPoint, geom, "Point");
 
     case "MultiPoint":
-      return testWith<MultiPoint>(isMultipoint, geom, "MultiPoint");
+      return testWith<MultiPoint>(isMultiPoint, geom, "MultiPoint");
 
     case "LineString":
       return testWith<MultiLineString>(isLine, geom, "LineString");
@@ -116,7 +116,7 @@ export const validateGeometry = (geometry: record | null): Maybe<Geometry> => {
         isMultiPolygon,
         geom,
         "MultiPolygon"
-      ).ifJust(() => warnWindingOrderPolygonArray(geom.coordinates));
+      ).ifJust(() => warnWindingOrderMultiPolygon(geom.coordinates));
 
     case "GeometryCollection":
       console.error("GeometryCollection not implemented");

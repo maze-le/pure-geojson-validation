@@ -23,6 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/geojson": "^7946.0.7",
+    "jsdoc-to-markdown": "^7.0.1",
     "purify-ts": "^0.16.1"
   },
   "devDependencies": {
