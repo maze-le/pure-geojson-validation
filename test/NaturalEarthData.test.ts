@@ -4,8 +4,6 @@ import { Nothing } from "purify-ts";
 
 import { maybeFeatureCollection } from "../src/index";
 
-const notOnce = <T>(array: T[], f: (x: T) => boolean) => !array.some(f);
-
 describe("Natural Earth Dataset", () => {
   let dataBuffer: string;
   let fc: FeatureCollection;
@@ -28,23 +26,21 @@ describe("Natural Earth Dataset", () => {
 
     it("should have only multipolygon geometries", () => {
       expect(
-        notOnce(
-          fc.features.map((f) => (f.geometry ? f.geometry.type : "--")),
-          (t) => t !== "MultiPolygon"
-        )
+        fc.features
+          .map((f) => (f.geometry ? f.geometry.type : "--"))
+          .every((t) => t === "MultiPolygon")
       ).toBe(true);
     });
 
-    it("should have some Natural Earth properties", () =>
+    it("should have all Natural Earth Adm0 properties", () =>
       expect(
-        notOnce(
-          fc.features.map((f) =>
+        fc.features
+          .map((f) =>
             f.properties && f.properties["ADM0_A3"]
               ? f.properties["ADM0_A3"]
               : null
-          ),
-          (id) => typeof id !== "string"
-        )
+          )
+          .every((id) => typeof id === "string")
       ).toBe(true));
   });
 });

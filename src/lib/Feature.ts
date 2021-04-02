@@ -7,7 +7,7 @@ import { isRecord, record } from "./Shared";
 
 /**
  * Checks if a given feature is valid and has sane coordinate values.
- * If a geometry fails sanity cheks on the coordinate space a null-geometry
+ * If a sanity cheks fails on the coordinate space, a null-geometry
  * is created and a warning is issued.
  *
  * @param feat an eventual feature
@@ -40,7 +40,6 @@ const feature = (
   geom: record | null,
   bbox?: unknown
 ): Feature => {
-  if (geom === null) console.warn("Feature has a null-geometry");
   const returnFeature: Feature = {
     type: "Feature",
     properties: props,

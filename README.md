@@ -1,26 +1,40 @@
 # pure-geojson-validation
 
-_pure-geojson-validation_ is a library to check the internal consistency of geojson objects. In addition to checking the JSON structure of a possible geojson blob, the library can also check the internal consistency of the given coordinates.
+_pure-geojson-validation_ is a typescript library to check the internal consistency of geojson objects. In addition to checking the JSON structure of a possible geojson blob, the library can also check the internal consistency of the given coordinates.
 
 ## Dependencies
 
-The library will use the geojson type definitions as found in the package: `@types/geojson`.
+The library will use the geojson type definitions as found in the package: `@types/geojson`. It uses algorithmic data structures from [purify-ts](https://gigobyte.github.io/purify) and is intended to work with it. Especially the [Maybe monad](https://gigobyte.github.io/purify/adts/Maybe) is used extensively when parsing and validating a possible geojson strings or objects. It is worth considering to look at _purify_, even if you don't intend to work with monads.
 
-The library uses algorithmic data structures from the library: [purify-ts](https://gigobyte.github.io/purify) and is intended to work with it. Especially the [Maybe monad](https://gigobyte.github.io/purify/adts/Maybe) is used extensively when parsing and validating a possible geojson string- or object. It is worth considering to look at _purify_, even if you don't intend to work with monads.
+If you never heard of a monad or a maybe, it is a form of control structure found in pureley functional languages like haskell. What a monad is is hard to explain, an I can only point you to people that are far better at explaining it than me: [Like the haskell wikibook](https://en.wikibooks.org/wiki/Haskell/Understanding_monads/Maybe), [Coputerphile](https://www.youtube.com/watch?v=t1e8gqXLbsU) or [Bartosz Milewski](https://www.youtube.com/watch?v=gHiyzctYqZ0).
 
 ### Limitations
 
- * The library **only** supports parsing and validating **FeatureCollections as top level object**.
+- The library **only** supports parsing and validating **FeatureCollections as top level object**.
 
- * The library currently **cannot parse GeometryCollection** geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
+- The library currently **cannot parse GeometryCollection** geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
 
- * The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
+- The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
 
- * The **Polygon** and **MultiPolygon** geometries are checked for right handedness. If a left handed polygon-ring is found a warning is issued. The validator will not reverse the order of rings.
+- The **Polygon** and **MultiPolygon** geometries are checked for right handedness. If a left handed polygon-ring is found a warning is issued. The validator will not reverse the order of rings.
 
 ## Usage
 
-### Installation
+### Git
+
+To check out the project, run:
+
+    git clone https://github.com/maze-le/pure-geojson-validation.git
+
+### Test
+
+To test the repository, run:
+
+    npm run test
+
+### Install as lib
+
+In your project:
 
     npm i -D @types/geojson
     npm i purify-ts pure-geojson-validation
@@ -30,6 +44,25 @@ The library uses algorithmic data structures from the library: [purify-ts](https
 #### With Maybe
 
 The library exposes several functions to parse strings as GeoJSON objects. Methods that start with _maybe_ always return a Maybe (a value wrapped in a `Just` or `Nothing`). It is recommended to use the Maybe implementations of the library.
+
+##### In the Maybe context
+
+```typescript
+import { maybeFeatureCollection } from "pure-geojson-validation";
+
+function maybeFeatureCollectionToFile() {
+  return maybeFeatureCollection(content).
+    .ifNothing(() => console.error("error parsing feature collection"))
+    .caseOf({
+      Just: (FeatureCollection) => writeToFile(
+        filename, JSON.stringify(FeatureCollection)
+      ),
+      Nothing: () => console.warn(`skipped writing file "${filename}"`),
+    });
+}
+```
+
+##### Unsafe conversion from the Maybe context to a regular context
 
 ```typescript
 import { maybeFeatureCollection } from "pure-geojson-validation";
@@ -209,7 +242,7 @@ const isMultiLineString: (pa: unknown) => boolean;
 
 Returns true if _pa_ is a line- or multipoint geometry as defined in [RFC7946,3.1.5](https://tools.ietf.org/html/rfc7946#section-3.1.5).
 
-The time complexity of this function is O(n*m), with n=length(pa); m=length(pa).
+The time complexity of this function is O(n\*m), with n=length(pa); m=length(pa).
 
 #### isPolygon
 

@@ -132,7 +132,7 @@ describe("Coordinates", () => {
       expect(isLine(validNegativePA)).toBe(true));
     it("returns true if l has only one entry", () =>
       expect(isLine(onlyOnePA)).toBe(true));
-    it("returns true if l is empty", () => expect(isLine(emptyPA)).toBe(false));
+    it("returns false if l is empty", () => expect(isLine(emptyPA)).toBe(false));
     it("returns false if l has latitudes higher than 180.0", () =>
       expect(isLine(invalidHighLatPA)).toBe(false));
     it("returns false if l has longitudes higher than 90.0", () =>
