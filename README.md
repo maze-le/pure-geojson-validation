@@ -50,19 +50,17 @@ The library exposes several functions to parse strings as GeoJSON objects. Metho
 ```typescript
 import { maybeFeatureCollection } from "pure-geojson-validation";
 
-function maybeFeatureCollectionToFile() {
-  return maybeFeatureCollection(content).
+const storeFeatureCollection = () =>
+  maybeFeatureCollection(content)
     .ifNothing(() => console.error("error parsing feature collection"))
     .caseOf({
-      Just: (FeatureCollection) => writeToFile(
-        filename, JSON.stringify(FeatureCollection)
-      ),
+      Just: (FeatureCollection) =>
+        writeToFile(filename, JSON.stringify(FeatureCollection)),
       Nothing: () => console.warn(`skipped writing file "${filename}"`),
     });
-}
 ```
 
-##### Unsafe conversion from the Maybe context to a regular context
+##### From the Maybe context to a regular context
 
 ```typescript
 import { maybeFeatureCollection } from "pure-geojson-validation";
@@ -115,39 +113,37 @@ The following types are exposed to ensure type consistency when using it as a li
 
 #### record
 
-A shorthand type for objects with entries of unknown value.
-
 ```typescript
 type record = Record<string, unknown>;
 ```
 
-#### BBoxTuple<T>
+A shorthand type for objects with entries of unknown value.
 
-An internal type that describes bounding boxes.
+#### BBoxTuple<T>
 
 ```typescript
 type BBoxTuple<T> = [T, T, T, T] | [T, T, T, T, T, T];
 ```
 
-#### Position
+An internal type that describes bounding boxes.
 
-The internal representation of point geometries. Point geometries with more than 3 entries are valid, but any entry past index 3 in an array will be ignored.
+#### Position
 
 ```typescript
 export type Position = number[];
 ```
 
-#### Coordinates
+The internal representation of point geometries. Point geometries with more than 3 entries are valid, but any entry past index 3 in an array will be ignored.
 
-The internal representation of coordinates that describe more complex geometries than the point.
+#### Coordinates
 
 ```typescript
 export type Coordinates = Position | Position[] | Position[][] | Position[][][];
 ```
 
-#### Geometry
+The internal representation of coordinates that describe more complex geometries than the point.
 
-A geojson geomtry as defined in `@types/geojson` except the `GeometryCollection` type as it is not implemented yet.
+#### Geometry
 
 ```typescript
 type Geom =
@@ -159,24 +155,74 @@ type Geom =
   | Polygon;
 ```
 
-### Parser
+A geojson geomtry as defined in `@types/geojson` except the `GeometryCollection` type as it is not implemented yet.
+
+### String validation methods
 
 The following methods turns a string representation of a possible _FeatureCollection_ eventually into a _FeatureCollection_ as defined in `@types/geojson`.
 
-#### maybeFeatureCollection
+Sanity checks are performed on coordinate values, if they fail the function returns with the associated geometry set to _null_ and a warning is issued. Additional checks are performed on bounding boxes and features. If they fail the function returns Nothing. If the collection is valid, `Just(GeoJSONobject)` is returned.
 
-Attempts to parse and validate the content string as `Maybe` of a _GeoJSON_ _FeatureCollection_. Sanity checks are performed on coordinate values, if they fail the function returns with the associated geometry set to _null_ and a warning is issued. Additional checks are performed on bounding boxes and features. If they fail the function returns Nothing. If the collection is valid, `Just(FeatureCollection)` is returned.
+The associated _try_ methods will raise an error when the validations fail.
+
+```typescript
+const maybeGeoJSON: (content: string) => Maybe<GeoJSONobject>;
+const tryGeoJSON: (content: string) => GeoJSONobject;
+```
+
+Attempts to parse and validate the content string as _Maybe_ of a _GeoJSON_ object (Geometry, Feature or FeatureCollection).
 
 ```typescript
 const maybeFeatureCollection: (content: string) => Maybe<FeatureCollection>;
+const tryFeatureCollection: (content: string) => FeatureCollection;
 ```
 
-#### tryFeatureCollection
-
-Attempts to parse and validate the content string as _GeoJSON_ _FeatureCollection_. Sanity checks are performed on coordinate values, if they fail the function returns with the associated geometry set to _null_ and a warning is issued. Additional checks are performed on bounding boxes and features. If they fail the function throws an error. If the collection is valid an object of the type _FeatureCollection_ is returned.
+Attempts to parse and validate the content string as _Maybe_ of a _GeoJSON_ _FeatureCollection_.
 
 ```typescript
-const tryFeatureCollection: (content: string) => FeatureCollection;
+const maybeFeature: (content: string) => Maybe<Feature>;
+const tryFeature: (content: string) => Feature;
+```
+
+Attempts to parse and validate the content string as _Maybe_ of a _GeoJSON_ _Geometry_.
+
+```typescript
+const maybeGeometry: (content: string) => Maybe<Geometry>;
+const tryGeometry: (content: string) => Geometry;
+```
+
+Attempts to parse and validate the content string as `Maybe` of a _GeoJSON_ _FeatureCollection_.
+
+### Object validation methods
+
+#### validateBBox
+
+```typescript
+const validateBBox: (bbox: unknown) => Maybe<BBox>;
+```
+
+Validates a possible bounding box and eventually returns with a GeoJSON _BBox_ object. _bbox_ is expected to be an array of length 4 or 6.
+
+#### validateFeature
+
+```typescript
+const validateFeature: (feat: unknown) => Maybe<Feature>;
+```
+
+Validates a possible _GeoJSON_ feature and eventually returns with a _Feature_ object as found in `@types/geojson`. _feat_ is expected to be a _GeoJSON_ feature object ([RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2)).
+
+#### validateFeatureCollection
+
+```typescript
+const validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
+```
+
+Validates a possible _GeoJSON_ feature collections and eventually returns with a _FeatureCollection_ object as found in `@types/geojson`.
+
+#### validateGeometry
+
+```typescript
+const validateGeometry: (geometry: record | null) => Maybe<Geometry>;
 ```
 
 ### Coordinate Predicates
@@ -288,54 +334,6 @@ Returns true if xs is an array of closed line segments
 ```
 
 Returns true if xs is an array of linear rings
-
-#### warnWindingOrderRing
-
-```typescript
-  const warnWindingOrderRing = (xs: Position[]): void
-```
-
-When xs has a left hand winding: issue a warning
-
-#### warnWindingOrderPolygon
-
-```typescript
-  const warnWindingOrderPolygon = (xs: Position[][]): void
-```
-
-When xs has rings with a left hand winding: issue a warning
-
-### Validation Functions
-
-#### validateBBox
-
-```typescript
-const validateBBox: (bbox: unknown) => Maybe<BBox>;
-```
-
-Validates a possible bounding box and eventually returns with a GeoJSON _BBox_ object. _bbox_ is expected to be an array of length 4 or 6.
-
-#### validateFeature
-
-```typescript
-const validateFeature: (feat: unknown) => Maybe<Feature>;
-```
-
-Validates a possible _GeoJSON_ feature and eventually returns with a _Feature_ object as found in `@types/geojson`. _feat_ is expected to be a _GeoJSON_ feature object ([RFC7946,3.1.2](https://tools.ietf.org/html/rfc7946#section-3.1.2)).
-
-#### validateFeatureCollection
-
-```typescript
-const validateFeatureCollection: (fc: unknown) => Maybe<FeatureCollection>;
-```
-
-Validates a possible _GeoJSON_ feature collections and eventually returns with a _FeatureCollection_ object as found in `@types/geojson`.
-
-#### validateGeometry
-
-```typescript
-const validateGeometry: (geometry: record | null) => Maybe<Geometry>;
-```
 
 Validates a possible _GeoJSON_ geometries and eventually returns with a _Geometry_ object as found in `@types/geojson`. Beware that **null** Geometries are valid according to the _GeoJSON_ spec and a call like: `validateGeometry(null)` will return `Just(null)`. If polygons or multipolygons are found with left hand windign number a warning is issued.
 
