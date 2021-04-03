@@ -40,6 +40,11 @@ export type Geom =
   | Point
   | Polygon;
 
+/** Geometry predicates */
+const isObject = (geom: record) => typeof geom === "object";
+const hasCoordinates = (geom: record) => Array.isArray(geom.coordinates);
+const hasType = (geom: record) => typeof geom.type === "string";
+
 /**
  * @returns true if geom is a valid geometry
  * @param geom
@@ -48,11 +53,6 @@ const isGeometry = (geom: record): boolean =>
   isObject(geom) && hasCoordinates(geom) && hasType(geom)
     ? geometryTypes.includes(<GeoJsonGeometryTypes>geom["type"])
     : false;
-
-/** Geometry predicates */
-const isObject = (geom: record) => typeof geom === "object";
-const hasCoordinates = (geom: record) => Array.isArray(geom.coordinates);
-const hasType = (geom: record) => typeof geom.type === "string";
 
 const isNotNullGeometry = (geometry: record | null): Maybe<record> =>
   Maybe.fromPredicate(() => geometry !== null, <record>geometry);
@@ -64,16 +64,15 @@ const isNotNullGeometry = (geometry: record | null): Maybe<record> =>
  *
  * @param geometry a possible geometry record
  */
-export const validateGeometry = (geometry: record | null): Maybe<Geometry> => {
-  return isNotNullGeometry(geometry)
+export const validateGeometry = (geometry: record | null): Maybe<Geometry> =>
+  isNotNullGeometry(geometry)
     .ifNothing(() => console.warn("null geometry found"))
     .caseOf({
-      Just: (theGeom) => transformGeometry(theGeom),
+      Just: (theGeometry) => transformGeometry(theGeometry),
       Nothing: () => Just(<Geom>(<unknown>null)),
     });
-};
 
-/** Eventually transforms a geometry. */
+/** Eventually transforms a geometry, if all predicates of the geometry are fulfilled. */
 const transformGeometry = (geom: record): Maybe<Geom> =>
   Maybe.fromPredicate(isGeometry, geom).chain((geom: record) =>
     transformGeometryType(<Geometry>(<unknown>geom))

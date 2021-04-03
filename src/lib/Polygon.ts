@@ -25,17 +25,20 @@ export const isRightHand = (ring: Position[]): boolean => {
   return sum > 0;
 };
 
-/** when xs has a left hand winding: issue a warning */
-export const warnWindingOrderRing = (xs: Position[]): void => {
-  if (!isRightHand(xs)) {
+/** when ring has a left hand winding: issue a warning */
+export const warnWindingOrderRing = (ring: Position[]): void => {
+  if (!isRightHand(ring)) {
     console.warn("ring with left hand winding order.");
   }
 };
 
-/** when xs has rings with a left hand winding: issue a warning */
-export const warnWindingOrderPolygon = (xs: Position[][], id = ""): void => {
+/** when polygon has exactly one ring with a left hand winding: issue a warning */
+export const warnWindingOrderPolygon = (
+  polygon: Position[][],
+  id = ""
+): void => {
   const label = id.length > 0 ? "" : ` (${id})`;
-  xs.some((x: Position[]) => {
+  polygon.some((x: Position[]) => {
     if (!isRightHand(x)) {
       console.warn(`polygon with left hand ring.${label}.`);
       return true;
@@ -45,13 +48,13 @@ export const warnWindingOrderPolygon = (xs: Position[][], id = ""): void => {
   });
 };
 
-/** when xs has polygons with left hand rings: issue a warning */
+/** when multipolygon has exactly one polygon with left hand rings: issue a warning */
 export const warnWindingOrderMultiPolygon = (
-  xs: Position[][][],
+  multipolygon: Position[][][],
   id = ""
 ): void => {
-  const label = id.length > 0 ? "" : ` (${id})`;
-  xs.some((poly: Position[][]) => {
+  const label = id.length > 0 ? `(${id})` : "";
+  multipolygon.some((poly: Position[][]) => {
     const inner = poly.some((ring: Position[]) => {
       if (!isRightHand(ring)) {
         console.warn(`multipolygon with left hand ring${label}.`);
@@ -68,10 +71,10 @@ export const warnWindingOrderMultiPolygon = (
 };
 
 /** Shorthand for last element of array */
-const last = <T>(xs: T[]) => xs[xs.length - 1];
+const last = <T>(xs: T[]): T => xs[xs.length - 1];
 
 /** A closed line segment is an array of points with p_0 === p_last */
-const isClosed = (xs: unknown[][]) =>
+const isClosed = (xs: number[][]) =>
   Array.isArray(xs[0]) &&
   Array.isArray(last(xs)) &&
   xs[0][0] === last(xs)[0] &&
@@ -79,7 +82,7 @@ const isClosed = (xs: unknown[][]) =>
 
 /** A linear ring is a closed line segment */
 export const isLinearRing = (xs: unknown[][]) =>
-  Array.isArray(xs) && xs.length > 3 && isLine(xs) && isClosed(xs);
+  Array.isArray(xs) && xs.length > 3 && isLine(xs) && isClosed(<number[][]>xs);
 
 /** A linear ring array is an array of closed line segments */
 export const isLinearRingArray = (xs: unknown[][][]) =>

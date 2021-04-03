@@ -1,9 +1,15 @@
-import { Feature, Geometry } from "geojson";
-import { Just, Maybe, Nothing } from "purify-ts";
+import { BBox, Feature, Geometry } from "geojson";
+import { Maybe } from "purify-ts";
 
 import { validateBBox } from "./BBox";
 import { validateGeometry } from "./Geometry";
 import { isRecord, record } from "./Shared";
+
+const getProps = (feat: record): Maybe<unknown> =>
+  Maybe.fromPredicate(
+    () => typeof feat.properties === "object",
+    feat.properties
+  );
 
 /**
  * Checks if a given feature is valid and has sane coordinate values.
@@ -14,44 +20,43 @@ import { isRecord, record } from "./Shared";
  */
 export const validateFeature = (feat: unknown): Maybe<Feature> => {
   const props = isRecord(feat)
-    .chain(validateFeatureProps)
+    .chain(getProps)
     .ifNothing(() => console.warn("Feature has an invalid property space"))
     .orDefault({});
 
-  return isRecord(feat).chain((f) =>
-    asFeature(f, isRecord(props).orDefault({}))
-  );
+  return isRecord(feat).chain((f) => asFeature(f, <record>props));
 };
-
-const validateFeatureProps = (feat: record): Maybe<unknown> =>
-  Maybe.fromPredicate(
-    () => typeof feat.properties === "object",
-    feat.properties
-  );
 
 const asFeature = (feat: record, props: record): Maybe<Feature> =>
-  typeof feat["geometry"] === "object"
-    ? Just(feature(props, <record>feat["geometry"], feat.bbox))
-    : Nothing;
+  Maybe.fromPredicate(
+    () => typeof feat["geometry"] === "object",
+    feature(
+      props,
+      validateGeometry(<record>feat["geometry"]).orDefault(
+        <Geometry>(<unknown>null)
+      ),
+      feat.bbox
+    )
+  );
 
 /** Factory method for features from a property, geometry and eventual bounding box. */
-const feature = (
-  props: record,
-  geom: record | null,
-  bbox?: unknown
-): Feature => {
-  const returnFeature: Feature = {
-    type: "Feature",
-    properties: props,
-    geometry: validateGeometry(geom).orDefault(
-      <Geometry>(<unknown>null)
-    ),
-  };
+const feature = (props: record, geom: Geometry, bbox?: unknown): Feature =>
+  validateBBox(bbox).caseOf({
+    Just: (b: BBox) => withBBox(props, geom, b),
+    Nothing: () => withoutBBox(props, geom),
+  });
 
-  const validBbox = validateBBox(bbox);
-  if (validBbox.isJust()) {
-    returnFeature.bbox = validBbox.orDefault([0, 0, 0, 0]);
-  }
+/** Features with bounding box. */
+const withBBox = (props: record, geom: Geometry, bbox: BBox): Feature => ({
+  bbox: bbox,
+  type: "Feature",
+  properties: props,
+  geometry: geom,
+});
 
-  return returnFeature;
-};
+/** Features without bounding box. */
+const withoutBBox = (props: record, geom: Geometry): Feature => ({
+  type: "Feature",
+  properties: props,
+  geometry: geom,
+});

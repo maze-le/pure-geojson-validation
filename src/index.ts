@@ -9,6 +9,12 @@ import { Geom, validateGeometry, geometryTypes } from "./lib/Geometry";
 import {
   maybeFeatureCollection,
   tryFeatureCollection,
+  maybeFeature,
+  tryFeature,
+  maybeGeoJSON,
+  tryGeoJSON,
+  maybeGeometry,
+  tryGeometry,
 } from "./lib/PureGeoJson";
 
 import { Coordinates, Position } from "./lib/Coordinates";
@@ -20,9 +26,6 @@ import {
   isPolygon,
   isLinearRing,
   isLinearRingArray,
-  warnWindingOrderPolygon,
-  warnWindingOrderRing,
-  warnWindingOrderMultiPolygon,
 } from "./lib/Polygon";
 
 export {
@@ -45,7 +48,7 @@ export {
    * set to _null_. Additional checks are performed on bounding boxes and
    * features. If they fail the function returns Nothing.
    *
-   * @param content the input that is be parsed and validated.
+   * @param content the sting input.
    * @returns {Maybe<FeatureCollection>} if it can be parsed and validated.
    * @returns {Nothing} otherwise.
    *
@@ -61,7 +64,7 @@ export {
    * If they fail the function throws an error.
    *
    * @throws {Error} when checks on features or bounding boxes fail.
-   * @param content the input that is be parsed and validated.
+   * @param content the sting input.
    * @returns {Maybe<FeatureCollection>} if it can be parsed and validated.
    * @returns {Nothing} otherwise.
    *
@@ -69,6 +72,99 @@ export {
    * @see https://gigobyte.github.io/purify/adts/Maybe
    */
   tryFeatureCollection,
+  /**
+   * Attempts to parse and validate the content string as Maybe of
+   * GeoJSON Feature. Sanity checks are performed on coordinate
+   * values, if they fail the function returns with the associated geometry
+   * set to _null_. Additional checks are performed on bounding boxes and
+   * features. If they fail the function returns Nothing.
+   *
+   * @param content a possible GeoJSON string
+   * @returns {Maybe<Feature>} if it can be parsed and validated.
+   * @returns {Nothing} otherwise.
+   *
+   * @see https://tools.ietf.org/html/rfc7946
+   * @see https://gigobyte.github.io/purify/adts/Maybe
+   */
+  maybeFeature,
+  /**
+   * Attempts to parse and validate the content string as GeoJSON Feature.
+   * Sanity checks are performed on coordinate values, if they fail the
+   * function returns with the associated geometry set to _null_. Additional
+   * checks are performed on bounding boxes and features. If they fail the
+   * function throws an error.
+   *
+   * @throws {Error} when checks on features or bounding boxes fail.
+   * @param content the sting input.
+   * @returns {Maybe<Feature>} if it can be parsed and validated.
+   * @returns {Nothing} otherwise.
+   *
+   * @see https://tools.ietf.org/html/rfc7946
+   * @see https://gigobyte.github.io/purify/adts/Maybe
+   */
+  tryFeature,
+  /**
+   * Attempts to parse and validate the content string as Maybe of
+   * GeoJSON object. Sanity checks are performed on coordinate
+   * values, if they fail the function returns with the associated geometry
+   * set to _null_. Additional checks are performed on bounding boxes and
+   * features. If they fail the function returns Nothing.
+   *
+   * @param content the sting input.
+   * @returns {Maybe<Feature>} if it can be parsed and validated.
+   * @returns {Nothing} otherwise.
+   *
+   * @see https://tools.ietf.org/html/rfc7946
+   * @see https://gigobyte.github.io/purify/adts/Maybe
+   */
+  maybeGeoJSON,
+  /**
+   * Attempts to parse and validate the content string as GeoJSON Object.
+   * Sanity checks are performed on coordinate values, if they fail the
+   * function returns with the associated geometry set to _null_. Additional
+   * checks  are performed on bounding boxes and features. If they fail the
+   * function throws an error.
+   *
+   * @throws {Error} when checks on features or bounding boxes fail.
+   * @param content the input that is be parsed and validated.
+   * @returns {Maybe<FeatureCollection>} if it can be parsed and validated.
+   * @returns {Nothing} otherwise.
+   *
+   * @see https://tools.ietf.org/html/rfc7946
+   * @see https://gigobyte.github.io/purify/adts/Maybe
+   */
+  tryGeoJSON,
+  /**
+   * Attempts to parse and validate the content string as Maybe of
+   * GeoJSON Geometry. Sanity checks are performed on coordinate values, if
+   * they  fail the function returns with _null_. Additional  checks are
+   * performed on  bounding boxes and features. If they fail the function
+   * returns Nothing.
+   *
+   * @param content a possible GeoJSON string
+   * @returns {Maybe<Geometry>} if it can be parsed and validated.
+   * @returns {Nothing} otherwise.
+   *
+   * @see https://tools.ietf.org/html/rfc7946
+   * @see https://gigobyte.github.io/purify/adts/Maybe
+   */
+  maybeGeometry,
+  /**
+   * Attempts to parse and validate the content string as GeoJSON Geometry.
+   * Sanity checks are performed on coordinate values, if they fail the
+   * function returns with _null_. Additional checks are performed on
+   * bounding boxes and features. If they fail the function throws an
+   * error.
+   *
+   * @throws {Error} when checks on features or bounding boxes fail.
+   * @param content the input that is be parsed and validated.
+   * @returns {Maybe<Geometry>} if it can be parsed and validated.
+   * @returns {Nothing} otherwise.
+   *
+   * @see https://tools.ietf.org/html/rfc7946
+   * @see https://gigobyte.github.io/purify/adts/Maybe
+   */
+  tryGeometry,
   /** Checks if lat is a number and represents an angle between -180.0° and 180.0° */
   isLat,
   /** Checks if lon is a number and represents an angle between -90.0° and 90.0° */
@@ -90,11 +186,11 @@ export {
   isPoint,
   /** @returns true if 'multipoint' is an array of point geometries. **/
   isMultiPoint,
-  /** @returns true if 'multipoint' is an array of point geometries. **/
+  /** @returns true if 'line' is a valid line geometry. **/
   isLineString,
   /** @returns true if 'multiline' is an array of line geometries. **/
   isMultiLineString,
-  /** @returns true if 'polygon' is an array of line geometries. **/
+  /** @returns true if 'polygon' is a valid polygon geometry. **/
   isPolygon,
   /** @returns true if 'multipolygon' is an array of polygon geometries. **/
   isMultiPolygon,
@@ -107,22 +203,6 @@ export {
   isLinearRing,
   /** @returns true if xs is an array of linear rings */
   isLinearRingArray,
-  /** When xs has a left hand winding: issue a warning */
-  warnWindingOrderRing,
-  /**
-   * When xs has rings with a left hand winding: issue a warning
-   * 
-   * @param xs a multipolygon array
-   * @param id a feature id identifying the array in case of an array.
-   **/
-  warnWindingOrderPolygon,
-  /**
-   * When xs has polygons with left hand rings: issue a warning
-   * 
-   * @param xs a multipolygon
-   * @param id a feature id identifying the array in case of an array.
-   **/
-  warnWindingOrderMultiPolygon,
   /**
    * Validates bounding boxes.
    *
