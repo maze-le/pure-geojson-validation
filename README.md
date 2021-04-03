@@ -6,7 +6,7 @@ _pure-geojson-validation_ is a typescript library to check the internal consiste
 
 The library will use the geojson type definitions as found in the package: `@types/geojson`. It uses algorithmic data structures from [purify-ts](https://gigobyte.github.io/purify) and is intended to work with it. Especially the [Maybe monad](https://gigobyte.github.io/purify/adts/Maybe) is used extensively when parsing and validating a possible geojson strings or objects. It is worth considering to look at _purify_, even if you don't intend to work with monads.
 
-If you never heard of a monad or a maybe, it is a form of control structure found in pureley functional languages like haskell. What a monad is is hard to explain, an I can only point you to people that are far better at explaining it than me: [Like the haskell wikibook](https://en.wikibooks.org/wiki/Haskell/Understanding_monads/Maybe), [Coputerphile](https://www.youtube.com/watch?v=t1e8gqXLbsU) or [Bartosz Milewski](https://www.youtube.com/watch?v=gHiyzctYqZ0).
+If you never heard of a monad or a maybe, it is a form of control structure found in pureley functional languages like haskell. What a monad is is hard to explain, an I can only point you to people that are far better at explaining it than me: [Like the haskell wikibook](https://en.wikibooks.org/wiki/Haskell/Understanding_monads/Maybe), [Computerphile](https://www.youtube.com/watch?v=t1e8gqXLbsU) or [Bartosz Milewski](https://www.youtube.com/watch?v=gHiyzctYqZ0).
 
 ### Limitations
 
