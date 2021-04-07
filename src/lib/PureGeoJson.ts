@@ -186,3 +186,11 @@ export const maybeGeoJSON = (content: unknown): Maybe<GeoJsonObject> =>
  */
 export const tryGeoJSON = (content: unknown): GeoJsonObject =>
   maybeGeoJSON(content).unsafeCoerce();
+
+export interface PureGeoJSONConfig {
+  strictness: "strict" | "loose";
+}
+
+export class PureGeoJSON {
+  config: PureGeoJSONConfig;
+}

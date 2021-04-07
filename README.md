@@ -99,36 +99,36 @@ function getFeatureCollectionOrNull() {
 
 ### String validation methods
 
-The following methods turns a string representation of a possible _FeatureCollection_ eventually into a _FeatureCollection_ as defined in `@types/geojson`.
+The following methods turns a possible _FeatureCollection_ (as string or object) eventually into a _FeatureCollection_ as defined in `@types/geojson`.
 
 Sanity checks are performed on coordinate values, if they fail the function returns with the associated geometry set to _null_ and a warning is issued. Additional checks are performed on bounding boxes and features. If they fail the function returns Nothing. If the collection is valid, `Just(GeoJSONobject)` is returned.
 
 The associated _try_ methods will raise an error when the validations fail.
 
 ```typescript
-const maybeGeoJSON: (content: string) => Maybe<GeoJSONobject>;
-const tryGeoJSON: (content: string) => GeoJSONobject;
+const maybeGeoJSON: (content: unknown) => Maybe<GeoJSONobject>;
+const tryGeoJSON: (content: unknown) => GeoJSONobject;
 ```
 
 Attempts to parse and validate the content string as _Maybe_ of a _GeoJSON_ object (Geometry, Feature or FeatureCollection).
 
 ```typescript
-const maybeFeatureCollection: (content: string) => Maybe<FeatureCollection>;
-const tryFeatureCollection: (content: string) => FeatureCollection;
+const maybeFeatureCollection: (content: unknown) => Maybe<FeatureCollection>;
+const tryFeatureCollection: (content: unknown) => FeatureCollection;
 ```
 
 Attempts to parse and validate the content string as _Maybe_ of a _GeoJSON_ _FeatureCollection_.
 
 ```typescript
-const maybeFeature: (content: string) => Maybe<Feature>;
-const tryFeature: (content: string) => Feature;
+const maybeFeature: (content: unknown) => Maybe<Feature>;
+const tryFeature: (content: unknown) => Feature;
 ```
 
 Attempts to parse and validate the content string as _Maybe_ of a _GeoJSON_ _Geometry_.
 
 ```typescript
-const maybeGeometry: (content: string) => Maybe<Geometry>;
-const tryGeometry: (content: string) => Geometry;
+const maybeGeometry: (content: unknown) => Maybe<Geometry>;
+const tryGeometry: (content: unknown) => Geometry;
 ```
 
 Attempts to parse and validate the content string as `Maybe` of a _GeoJSON_ _FeatureCollection_.
