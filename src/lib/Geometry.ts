@@ -80,7 +80,7 @@ const transformGeometry = (geom: record): Maybe<Geom> =>
 
 /** Transforms a geometry depending on the specified type. */
 const transformGeometryType = (geom: Geometry): Maybe<Geom> => {
-  switch (geom["type"]) {
+  switch (geom.type) {
     case "Point":
       return testWith(isPoint, geom, "Point");
 

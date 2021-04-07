@@ -23,6 +23,9 @@ const geographicCoordinates = (bbox: BBoxTuple<number>): Maybe<BBox> =>
     <BBox>bbox
   );
 
+// TODO: Antimeridian Crossing
+// TODO: Poles
+
 /**
  * A bounding box is geographic 'fence' around a feature or geometry. It is
  * valid when it is a numbered array with 4 or 6 coordinate values. The

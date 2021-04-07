@@ -11,6 +11,9 @@ const getProps = (feat: record): Maybe<unknown> =>
     feat.properties
   );
 
+const hasType = (feat: record): Maybe<record> =>
+  Maybe.fromPredicate((f) => f.type === "Feature", feat);
+
 /**
  * Checks if a given feature is valid and has sane coordinate values.
  * If a sanity cheks fails on the coordinate space, a null-geometry
@@ -24,7 +27,9 @@ export const validateFeature = (feat: unknown): Maybe<Feature> => {
     .ifNothing(() => console.warn("Feature has an invalid property space"))
     .orDefault({});
 
-  return isRecord(feat).chain((f) => asFeature(f, <record>props));
+  return isRecord(feat)
+    .chain(hasType)
+    .chain((f) => asFeature(f, <record>props));
 };
 
 const asFeature = (feat: record, props: record): Maybe<Feature> =>

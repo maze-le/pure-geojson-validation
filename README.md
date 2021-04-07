@@ -10,13 +10,11 @@ If you never heard of a monad or a maybe, it is a form of control structure foun
 
 ### Limitations
 
-- The library **only** supports parsing and validating **FeatureCollections as top level object**.
-
 - The library currently **cannot parse GeometryCollection** geometries correctly. For now validating a _GeometryCollection_ geometry will yield `Nothing`.
 
-- The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid, only supported values will be returned by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
+- The library does not and will not support deprecated geojson features like the `crs` property. Although any additional properties are valid ([RFC7946, #6](https://tools.ietf.org/html/rfc7946#section-6)), **only geojson object members will be returned** by parser- or validation functions. That means, if you parse a GeoJSON object with an additional property like e.g. `crs` it will not be represented in the resulting object.
 
-- The **Polygon** and **MultiPolygon** geometries are checked for right handedness. If a left handed polygon-ring is found a warning is issued. The validator will not reverse the order of rings.
+- The **Polygon** and **MultiPolygon** geometries are checked for right handedness. If a left handed polygon-ring is found a warning is issued. The validator will not reverse the order of left handed rings.
 
 ## Usage
 
@@ -50,13 +48,13 @@ The library exposes several functions to parse strings as GeoJSON objects. Metho
 ```typescript
 import { maybeFeatureCollection } from "pure-geojson-validation";
 
-const storeFeatureCollection = () =>
+const storeFeatureCollection = (path: string) =>
   maybeFeatureCollection(content)
     .ifNothing(() => console.error("error parsing feature collection"))
     .caseOf({
       Just: (FeatureCollection) =>
-        writeToFile(filename, JSON.stringify(FeatureCollection)),
-      Nothing: () => console.warn(`skipped writing file "${filename}"`),
+        writeToFile(path, JSON.stringify(FeatureCollection)),
+      Nothing: () => console.warn(`skipped writing file "${path}"`),
     });
 ```
 
@@ -97,65 +95,7 @@ function getFeatureCollectionOrNull() {
 }
 ```
 
-## Library Types, Methods and Objects
-
-### Constants
-
-The Array of possible geometry types is exposed to give non-typescript users access to valid geometry types. The `geometryTypes` array contains all currently supported geometry types as string.
-
-```typescript
-const geometryTypes: GeoJsonGeometryTypes[];
-```
-
-### Types
-
-The following types are exposed to ensure type consistency when using it as a library.
-
-#### record
-
-```typescript
-type record = Record<string, unknown>;
-```
-
-A shorthand type for objects with entries of unknown value.
-
-#### BBoxTuple<T>
-
-```typescript
-type BBoxTuple<T> = [T, T, T, T] | [T, T, T, T, T, T];
-```
-
-An internal type that describes bounding boxes.
-
-#### Position
-
-```typescript
-export type Position = number[];
-```
-
-The internal representation of point geometries. Point geometries with more than 3 entries are valid, but any entry past index 3 in an array will be ignored.
-
-#### Coordinates
-
-```typescript
-export type Coordinates = Position | Position[] | Position[][] | Position[][][];
-```
-
-The internal representation of coordinates that describe more complex geometries than the point.
-
-#### Geometry
-
-```typescript
-type Geom =
-  | LineString
-  | MultiLineString
-  | MultiPoint
-  | MultiPolygon
-  | Point
-  | Polygon;
-```
-
-A geojson geomtry as defined in `@types/geojson` except the `GeometryCollection` type as it is not implemented yet.
+## Methods
 
 ### String validation methods
 
@@ -335,7 +275,65 @@ Returns true if xs is an array of closed line segments
 
 Returns true if xs is an array of linear rings
 
-Validates a possible _GeoJSON_ geometries and eventually returns with a _Geometry_ object as found in `@types/geojson`. Beware that **null** Geometries are valid according to the _GeoJSON_ spec and a call like: `validateGeometry(null)` will return `Just(null)`. If polygons or multipolygons are found with left hand windign number a warning is issued.
+## Types and Objects
+
+### Constants
+
+The Array of possible geometry types is exposed to give non-typescript users access to valid geometry types. The `geometryTypes` array contains all currently supported geometry types as string.
+
+```typescript
+const geometryTypes: GeoJsonGeometryTypes[];
+```
+
+### Types
+
+The following types are exposed to ensure type consistency when using it as a library.
+
+#### record
+
+```typescript
+type record = Record<string, unknown>;
+```
+
+A shorthand type for objects with entries of unknown value.
+
+#### BBoxTuple<T>
+
+```typescript
+type BBoxTuple<T> = [T, T, T, T] | [T, T, T, T, T, T];
+```
+
+An internal type that describes bounding boxes.
+
+#### Position
+
+```typescript
+export type Position = number[];
+```
+
+The internal representation of point geometries. Point geometries with more than 3 entries are valid, but any entry past index 3 in an array will be ignored.
+
+#### Coordinates
+
+```typescript
+export type Coordinates = Position | Position[] | Position[][] | Position[][][];
+```
+
+The internal representation of coordinates that describe more complex geometries than the point.
+
+#### Geometry
+
+```typescript
+type Geom =
+  | LineString
+  | MultiLineString
+  | MultiPoint
+  | MultiPolygon
+  | Point
+  | Polygon;
+```
+
+A geojson geomtry as defined in `@types/geojson` except the `GeometryCollection` type as it is not implemented yet.
 
 ## Future Developments
 
